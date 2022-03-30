@@ -1,5 +1,7 @@
 # UoA Discords Website
 
+[![Node.js CI](https://github.com/UoA-Discords/uoa-discords-website/actions/workflows/node.js.yml/badge.svg)](https://github.com/UoA-Discords/uoa-discords-website/actions/workflows/node.js.yml)
+
 Frontend website for the UoA Discords project.
 
 ## Installation
