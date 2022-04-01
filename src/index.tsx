@@ -6,6 +6,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { createTheme, CssBaseline, darkScrollbar, ThemeProvider } from '@mui/material';
 import App from './App';
+import { CookiesProvider } from 'react-cookie';
 
 const theme = createTheme({
     palette: {
@@ -26,9 +27,11 @@ const root = ReactDOMClient.createRoot(container);
 
 root.render(
     <StrictMode>
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <App />
-        </ThemeProvider>
+        <CookiesProvider>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <App />
+            </ThemeProvider>
+        </CookiesProvider>
     </StrictMode>,
 );
