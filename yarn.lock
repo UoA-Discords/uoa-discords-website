@@ -2265,6 +2265,11 @@
     "@typescript-eslint/types" "5.17.0"
     eslint-visitor-keys "^3.0.0"
 
+"@uoa-discords/uoa-discords-shared-types@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@uoa-discords/uoa-discords-shared-types/-/uoa-discords-shared-types-1.0.1.tgz#78f46fd0f38ed918a7e479dbba394de95e0a25c6"
+  integrity sha512-he+1UGGcod+iexRZSo0PVRXYw3zsodMB61VUGwnn+bnrDqoZ02fNG2WebptqH34dgno+qbkotfnczEvXeQvF6w==
+
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.11.1.tgz#2bfd767eae1a6996f432ff7e8d7fc75679c0b6a7"
@@ -6172,6 +6177,11 @@ mkdirp@^0.5.5, mkdirp@~0.5.1:
   integrity sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==
   dependencies:
     minimist "^1.2.6"
+
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
 ms@2.0.0:
   version "2.0.0"

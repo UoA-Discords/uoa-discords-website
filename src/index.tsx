@@ -26,12 +26,10 @@ const container = document.getElementById('root')!;
 const root = ReactDOMClient.createRoot(container);
 
 root.render(
-    <StrictMode>
-        <CookiesProvider>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <App />
-            </ThemeProvider>
-        </CookiesProvider>
-    </StrictMode>,
+    <CookiesProvider>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <App />
+        </ThemeProvider>
+    </CookiesProvider>,
 );

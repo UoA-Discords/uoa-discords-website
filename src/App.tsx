@@ -1,10 +1,10 @@
 import React from 'react';
-import { useCookies } from 'react-cookie';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
+import AccountPage from './components/AccountPage';
 import Auth from './components/Auth';
+import LoginRedirect from './components/LoginRedirect';
 import MainPage from './components/MainPage';
-import LoginResponse from './types/LoginResponse';
 
 function App() {
     return (
@@ -12,6 +12,8 @@ function App() {
             <Routes>
                 <Route index element={<MainPage />} />
                 <Route path="auth" element={<Auth />} />
+                <Route path="me" element={<AccountPage />} />
+                <Route path="login" element={<LoginRedirect />} />
             </Routes>
         </BrowserRouter>
     );
