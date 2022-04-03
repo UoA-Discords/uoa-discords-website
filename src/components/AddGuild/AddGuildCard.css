@@ -1,0 +1,5 @@
+.addGuildCard.disabled {
+    color: gray;
+    pointer-events: none;
+    filter: brightness(50%);
+}
