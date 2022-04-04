@@ -4,7 +4,7 @@ import { useCookies } from 'react-cookie';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../api';
 import useDiscordAccess from '../../hooks/useDiscordAccess';
-import useUser from '../../hooks/useUser';
+import useDiscordUser from '../../hooks/useDiscordUser';
 
 enum AuthStages {
     Loading,
@@ -19,7 +19,7 @@ const Auth = () => {
     const [{ oauth_state }, , clearOAuthState] = useCookies<'oauth_state', { oauth_state?: string }>(['oauth_state']);
 
     const { setDiscordAccess, clearDiscordAccess } = useDiscordAccess();
-    const { setUser } = useUser();
+    const { setUser } = useDiscordUser();
 
     useEffect(() => {
         const code = searchParams.get('code');

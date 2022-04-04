@@ -3,9 +3,9 @@ import { useCallback } from 'react';
 import { useCookies } from 'react-cookie';
 
 interface ExtendedTokenResponse extends AccessTokenResponse {
-    /** [Added] Date of token expiration. */
+    /** Date of token expiration. */
     expires_at: number;
-    /** [Added] Date of token issuing. */
+    /** Date of token issuing (does not update on refresh). */
     issued_at: number;
 }
 

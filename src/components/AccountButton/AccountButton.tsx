@@ -1,46 +1,57 @@
-import { Collapse } from '@mui/material';
-import { useState } from 'react';
+import { CircularProgress, Collapse, ListItemButton, Stack, Typography } from '@mui/material';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import useUser from '../../hooks/useUser';
+import useDiscordAccess from '../../hooks/useDiscordAccess';
+import useDiscordUser from '../../hooks/useDiscordUser';
 import discordIcon from '../../images/discordIcon.svg';
 import './AccountButton.css';
 
 const AccountButton = () => {
     const [isHovered, setIsHovered] = useState<boolean>(false);
 
-    const { user } = useUser();
+    const { discordAccess } = useDiscordAccess();
+    const { user } = useDiscordUser();
 
-    if (user)
-        return (
-            <Link to="/me">
-                <div
-                    onMouseOver={() => setIsHovered(true)}
-                    onMouseLeave={() => setIsHovered(false)}
-                    className="noSelect accountButton"
-                >
+    /** If null use a <CircularProgress /> element. */
+    const [image, buttonText, buttonDescription] = useMemo<[JSX.Element, string, string]>(() => {
+        if (discordAccess) {
+            if (user)
+                return [
                     <img
                         src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
-                        height="20"
                         alt="Your Discord profile"
-                    />
-                    <Collapse in={isHovered} orientation="horizontal">
-                        <span>{user.username}</span>
-                    </Collapse>
-                </div>
-            </Link>
-        );
+                        height="64"
+                    />,
+                    user.username,
+                    'View profile',
+                ];
+            else return [<CircularProgress />, 'Loading', 'Loading profile'];
+        } else return [<img src={discordIcon} alt="Discord logo" height="64" width="64" />, 'Log in', 'Via Discord'];
+    }, [discordAccess, user]);
 
     return (
-        <Link to="/login">
+        <Link to={discordAccess ? '/me' : '/login'} style={{ color: 'white' }}>
             <div
                 onMouseOver={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className="noSelect accountButton"
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                }}
             >
-                <img src={discordIcon} height="20" alt="Discord Logo" />
-                <Collapse in={isHovered} orientation="horizontal">
-                    <span>Log in</span>
-                </Collapse>
+                <ListItemButton sx={{ borderRadius: '0 0 0 1rem' }}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                        {image}
+                        <Collapse in={isHovered} orientation="horizontal">
+                            {buttonText}
+                            <Typography variant="body1" color="gray" sx={{ whiteSpace: 'nowrap' }}>
+                                {buttonDescription}
+                            </Typography>
+                        </Collapse>
+                    </Stack>
+                </ListItemButton>
             </div>
         </Link>
     );
