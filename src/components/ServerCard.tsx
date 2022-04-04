@@ -6,7 +6,7 @@ const ServerCard = ({ server }: { server: SampleItem }) => {
     return (
         <Card sx={{ height: '100%', width: '100%' }}>
             <CardActionArea sx={{ display: 'flex', p: 1, width: '100%', height: '100%' }} className="noSelect">
-                <CardMedia component="img" image={server.icon} sx={{ width: 128, borderRadius: '50%' }} />
+                <CardMedia component="img" image={server.icon} sx={{ width: 128 }} className="discordProfilePicture" />
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <CardContent sx={{ flex: '1 0 auto' }}>
                         <Typography component="div" variant="h5">

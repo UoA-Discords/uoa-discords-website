@@ -21,6 +21,7 @@ const AccountButton = () => {
                         src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
                         alt="Your Discord profile"
                         height="64"
+                        className="discordProfilePicture"
                     />,
                     user.username,
                     'View profile',
