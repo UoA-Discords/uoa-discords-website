@@ -10,7 +10,6 @@ enum AuthStages {
     Loading,
     CSRF,
     Errored,
-    GettingUserData,
     Exiting,
 }
 
@@ -27,7 +26,6 @@ const Auth = () => {
         const receivedState = searchParams.get('state');
 
         if (code && oauth_state === receivedState) {
-            console.log('making request');
             api.getToken(code, window.location.origin + '/auth')
                 .then((e) => {
                     clearOAuthState('oauth_state');
@@ -39,31 +37,14 @@ const Auth = () => {
                     }
 
                     setDiscordAccess(e.data, 'generate');
-                    setAuthStage(AuthStages.GettingUserData);
-
-                    api.getUserInfo(e.data.access_token)
-                        .then((res) => {
-                            if (res.status !== 200) {
-                                console.warn(
-                                    `Got status code ${e.status} on token get attempt with message: ${e.statusText}`,
-                                    e.data,
-                                );
-                            }
-
-                            setUser(res.data);
-                            setAuthStage(AuthStages.Exiting);
-                            window.open('/', '_self');
-                        })
-                        .catch((e) => {
-                            console.error(e);
-                            setAuthStage(AuthStages.Errored);
-                        });
+                    setAuthStage(AuthStages.Exiting);
+                    window.open('/', '_self');
                 })
                 .catch((e) => {
                     console.error(e);
                     setAuthStage(AuthStages.Errored);
                 });
-        } else if (authStage !== AuthStages.Exiting && authStage !== AuthStages.GettingUserData) {
+        } else if (authStage !== AuthStages.Exiting) {
             clearDiscordAccess();
             if (oauth_state && oauth_state !== receivedState) {
                 setAuthStage(AuthStages.CSRF);
@@ -83,16 +64,6 @@ const Auth = () => {
     }, [loadingDots]);
 
     switch (authStage) {
-        case AuthStages.GettingUserData:
-            return (
-                <Stack alignItems="center" justifyContent="center" sx={{ height: '100vh' }}>
-                    <Typography variant="h3" gutterBottom>
-                        Getting User Data
-                        {'.'.repeat(loadingDots + 1)}
-                    </Typography>
-                    <CircularProgress size={80} />
-                </Stack>
-            );
         case AuthStages.Loading:
             return (
                 <Stack alignItems="center" justifyContent="center" sx={{ height: '100vh' }}>

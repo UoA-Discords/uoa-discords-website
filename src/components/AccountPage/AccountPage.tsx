@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import useUser, { FullUserResponse } from '../../hooks/useUser';
@@ -49,7 +49,7 @@ const AccountPage = ({ userCookie, discordCookie }: AccountPageProps) => {
     /** Whether the option for extending an access token should be visible. */
     const canRefresh = useMemo<boolean>(() => {
         // can refresh if session expires in <= 3 days
-        return (discordData.expires_at - Date.now()) / 1000 / 60 / 60 / 24 <= 3 || !false;
+        return (discordData.expires_at - Date.now()) / 1000 / 60 / 60 / 24 <= 3;
     }, [discordData.expires_at]);
 
     const handleRefresh = useCallback(() => {
@@ -66,12 +66,6 @@ const AccountPage = ({ userCookie, discordCookie }: AccountPageProps) => {
             })
             .catch((e) => console.error(e));
     }, [discordCookie, discordData.refresh_token]);
-
-    useEffect(() => {
-        api.getDiscordGuilds(discordData.access_token)
-            .then((e) => console.log(e))
-            .catch((e) => console.log(e));
-    });
 
     return (
         <Container>
@@ -90,7 +84,7 @@ const AccountPage = ({ userCookie, discordCookie }: AccountPageProps) => {
                     {userData.username}
                     <span style={{ color: 'gray' }}>#{userData.discriminator}</span>
                 </Typography>
-                <Typography variant="caption" color="gray">
+                <Typography variant="caption" color="gray" title="Your Discord ID">
                     {userData.id}
                 </Typography>
                 <Typography variant="caption" color="gray">
@@ -107,14 +101,21 @@ const AccountPage = ({ userCookie, discordCookie }: AccountPageProps) => {
                     </span>
                     .
                 </Typography>
-                <Button variant="outlined" color="secondary" size="small" sx={{ mt: 3 }} onClick={handleLogout}>
-                    Log out
-                </Button>
-                {canRefresh && (
-                    <Button variant="outlined" color="secondary" size="small" sx={{ mt: 3 }} onClick={handleRefresh}>
-                        Refresh Session
+                <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                    <Button variant="outlined" color="warning" size="small" onClick={handleLogout}>
+                        Log out
                     </Button>
-                )}
+                    {canRefresh && (
+                        <Button variant="outlined" color="success" size="small" onClick={handleRefresh}>
+                            Refresh Session
+                        </Button>
+                    )}
+                    <Link to="/apply" style={{ textDecoration: 'none' }}>
+                        <Button variant="outlined" color="info" size="small">
+                            Add Server
+                        </Button>
+                    </Link>
+                </Stack>
             </Stack>
         </Container>
     );
