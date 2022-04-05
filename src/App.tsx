@@ -3,34 +3,26 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import api from './api';
 import './App.css';
 import AccountPage from './components/AccountPage';
-import AddGuild from './components/AddGuild';
+import Apply from './components/Apply';
 import Auth from './components/Auth';
 import LoginRedirect from './components/LoginRedirect';
 import MainPage from './components/MainPage';
+import NotFound from './components/NotFound';
 import useDiscordAccess from './hooks/useDiscordAccess';
-import useUser from './hooks/useUser';
+import useDiscordUser from './hooks/useDiscordUser';
 
 function App() {
     const { discordAccess } = useDiscordAccess();
-    const { user, setUser } = useUser();
+    const { user, setUser } = useDiscordUser();
 
     useEffect(() => {
         if (discordAccess && !user) {
             // logged in to discord but no user data
-            api.getUserInfo(discordAccess.access_token)
-                .then(({ status, statusText, data }) => {
-                    if (status !== 200) {
-                        console.warn(
-                            `Got status code ${status} trying to get user data with message: ${statusText}`,
-                            data,
-                        );
-                    }
-
-                    setUser(data);
-                })
-                .catch((e) => {
-                    console.error(e);
-                });
+            api.getUserInfo(discordAccess.access_token).then((res) => {
+                if (res.success) {
+                    setUser(res.data);
+                }
+            });
         }
     }, [discordAccess, setUser, user]);
 
@@ -41,7 +33,8 @@ function App() {
                 <Route path="auth" element={<Auth />} />
                 <Route path="me" element={<AccountPage />} />
                 <Route path="login" element={<LoginRedirect />} />
-                <Route path="apply" element={<AddGuild />} />
+                <Route path="apply" element={<Apply />} />
+                <Route path="*" element={<NotFound />} />
             </Routes>
         </BrowserRouter>
     );

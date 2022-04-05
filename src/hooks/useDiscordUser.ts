@@ -13,7 +13,7 @@ export interface FullUserResponse extends UserResponse {
 }
 
 /** Managers the Discord user cookie. */
-function useUser(): UserResponse {
+function useDiscordUser(): UserResponse {
     const [{ discordUser }, setCookie, removeCookie] = useCookies<'discordUser', { discordUser?: User }>([
         'discordUser',
     ]);
@@ -36,4 +36,4 @@ function useUser(): UserResponse {
     };
 }
 
-export default useUser;
+export default useDiscordUser;

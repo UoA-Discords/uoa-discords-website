@@ -1,15 +1,22 @@
-import { Container, Typography } from '@mui/material';
-import React from 'react';
+import { useEffect, useState } from 'react';
+import { Container } from '@mui/material';
 import AccountButton from './AccountButton';
 import ServerGallery from './ServerGallery';
+import Title from './Title';
 
 const MainPage = () => {
+    const [fadeDelay, setFadeDelay] = useState<number>(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => setFadeDelay(fadeDelay + 1), 100);
+
+        return () => clearInterval(interval);
+    }, [fadeDelay]);
+
     return (
-        <Container>
+        <Container maxWidth="xl">
             <AccountButton />
-            <Typography variant="h6" textAlign="center">
-                UoA Discords
-            </Typography>
+            <Title />
             <ServerGallery />
         </Container>
     );

@@ -1,0 +1,9 @@
+span.sessionTimeInfo {
+    color: lightgray;
+    transition: color 0.1s linear;
+    cursor: help;
+}
+
+span.sessionTimeInfo:hover {
+    color: white;
+}
