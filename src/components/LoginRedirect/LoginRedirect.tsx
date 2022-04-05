@@ -4,7 +4,6 @@ import { useCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import useDiscordAccess from '../../hooks/useDiscordAccess';
-import adios from '../../images/adios.png';
 
 const CLIENT_ID = '958568584349618227';
 const SCOPES = ['guilds', 'identify'].join('%20');
@@ -56,7 +55,7 @@ const LoginRedirect = () => {
             <Typography variant="h2" textAlign="center" gutterBottom>
                 Redirecting to Discord
             </Typography>
-            <img src={adios} alt="Adios" />
+            <img src="https://i.redd.it/m308pw9b09831.jpg" loading="lazy" alt="Adios" />
         </Container>
     );
 };
