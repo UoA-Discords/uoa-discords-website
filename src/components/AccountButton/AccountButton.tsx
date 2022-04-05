@@ -12,7 +12,6 @@ const AccountButton = () => {
     const { discordAccess } = useDiscordAccess();
     const { user } = useDiscordUser();
 
-    /** If null use a <CircularProgress /> element. */
     const [image, buttonText, buttonDescription] = useMemo<[JSX.Element, string, string]>(() => {
         if (discordAccess) {
             if (user)
