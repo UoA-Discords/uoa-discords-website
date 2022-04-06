@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, CircularProgress, Container, Stack, Typography } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import { useSearchParams } from 'react-router-dom';
@@ -26,24 +26,17 @@ const Auth = () => {
         const receivedState = searchParams.get('state');
 
         if (code && oauth_state === receivedState) {
-            api.getToken(code, window.location.origin + '/auth')
-                .then((e) => {
-                    clearOAuthState('oauth_state');
-                    if (e.status !== 200) {
-                        console.warn(
-                            `Got status code ${e.status} on token get attempt with message: ${e.statusText}`,
-                            e.data,
-                        );
-                    }
-
-                    setDiscordAccess(e.data, 'generate');
+            api.getToken(code).then((res) => {
+                clearOAuthState('oauth_state');
+                if (res.success) {
+                    setDiscordAccess(res.data, 'generate');
                     setAuthStage(AuthStages.Exiting);
                     window.open('/', '_self');
-                })
-                .catch((e) => {
-                    console.error(e);
+                } else {
                     setAuthStage(AuthStages.Errored);
-                });
+                    console.error(res.error);
+                }
+            });
         } else if (authStage !== AuthStages.Exiting) {
             clearDiscordAccess();
             if (oauth_state && oauth_state !== receivedState) {

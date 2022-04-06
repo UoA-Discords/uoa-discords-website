@@ -1,4 +1,4 @@
-import { AccessTokenResponse } from '@uoa-discords/uoa-discords-shared-types';
+import { AccessTokenResponse } from '@uoa-discords/shared-utils';
 import { useCallback } from 'react';
 import { useCookies } from 'react-cookie';
 

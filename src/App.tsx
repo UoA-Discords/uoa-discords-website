@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import api from './api';
+import { DiscordAPI } from '@uoa-discords/shared-utils';
 import './App.css';
 import AccountPage from './components/AccountPage';
 import Apply from './components/Apply';
@@ -18,9 +18,11 @@ function App() {
     useEffect(() => {
         if (discordAccess && !user) {
             // logged in to discord but no user data
-            api.getUserInfo(discordAccess.access_token).then((res) => {
+            DiscordAPI.getUserInfo(discordAccess.access_token).then((res) => {
                 if (res.success) {
                     setUser(res.data);
+                } else {
+                    console.error(res.error);
                 }
             });
         }

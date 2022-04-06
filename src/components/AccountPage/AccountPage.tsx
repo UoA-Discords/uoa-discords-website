@@ -1,9 +1,9 @@
-import { Button, Container, Stack, Typography } from '@mui/material';
-import { Link } from 'react-router-dom';
-import useDiscordUser, { FullUserResponse } from '../../hooks/useDiscordUser';
 import useDiscordAccess, { FullDiscordAccessResponse } from '../../hooks/useDiscordAccess';
+import useDiscordUser, { FullUserResponse } from '../../hooks/useDiscordUser';
+import { Button, Container, Stack, Typography } from '@mui/material';
 import LoadingAccountPage from './LoadingAccountPage';
 import FullAccountPage from './FullAccountPage';
+import { Link } from 'react-router-dom';
 
 const AccountPage = () => {
     const userCookie = useDiscordUser();

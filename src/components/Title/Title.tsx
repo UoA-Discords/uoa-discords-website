@@ -1,8 +1,9 @@
 import { Fade, Slide, Stack, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
 const title: string = 'uoa-discords.com';
+const subtitle: string = "An Unspecified University's Discord Server Catalogue";
 
 /** (Possibly) Random delay calculator for fading transition.
  * @param {number} index - The index of this character in the title string.
@@ -56,7 +57,7 @@ const Title = () => {
                 <Typography variant="h2" textAlign="center">
                     {title}
                 </Typography>
-                <Typography color="gray">An Unspecified University's Discord Server Catalogue</Typography>
+                <Typography color="gray">{subtitle}</Typography>
             </Stack>
         );
     }
@@ -69,7 +70,7 @@ const Title = () => {
                 ))}
             </Typography>
             <Slide in={!!shouldFadeInSubtitle}>
-                <Typography color="gray">An Unspecified University's Discord Server Catalogue</Typography>
+                <Typography color="gray">{subtitle}</Typography>
             </Slide>
         </Stack>
     );

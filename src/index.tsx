@@ -1,12 +1,11 @@
-import React, { StrictMode } from 'react';
+import { createTheme, CssBaseline, darkScrollbar, ThemeProvider } from '@mui/material';
 import * as ReactDOMClient from 'react-dom/client';
+import { CookiesProvider } from 'react-cookie';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { createTheme, CssBaseline, darkScrollbar, ThemeProvider } from '@mui/material';
 import App from './App';
-import { CookiesProvider } from 'react-cookie';
 
 const theme = createTheme({
     palette: {

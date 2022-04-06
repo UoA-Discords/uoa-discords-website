@@ -1,8 +1,8 @@
 import { Container, Typography, LinearProgress, Stack, Fade, Button } from '@mui/material';
+import useDiscordUser from '../../hooks/useDiscordUser';
+import { DiscordAPI } from '@uoa-discords/shared-utils';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api';
-import useDiscordUser from '../../hooks/useDiscordUser';
 
 enum ErrorStates {
     InvalidAuth,
@@ -19,7 +19,7 @@ const LoadingAccountPage = ({ access_token }: { access_token: string }) => {
     const isTakingTooLong = useMemo<boolean>(() => waitTime >= 3, [waitTime]);
 
     useEffect(() => {
-        api.getUserInfo(access_token).then((res) => {
+        DiscordAPI.getUserInfo(access_token).then((res) => {
             if (res.success) setUser(res.data);
             else {
                 if (res.error.response?.status === 401) {
