@@ -1,6 +1,6 @@
 # UoA Discords Website
 
-[![Node.js CI](https://github.com/UoA-Discords/uoa-discords-website/actions/workflows/node.js.yml/badge.svg)](https://github.com/UoA-Discords/uoa-discords-website/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/UoA-Discords/uoa-discords-website/actions/workflows/node.js.yml/badge.svg)](https://github.com/UoA-Discords/uoa-discords-website/actions/workflows/node.js.yml)[![Deploy](https://github.com/UoA-Discords/uoa-discords-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/UoA-Discords/uoa-discords-website/actions/workflows/deploy.yml)
 
 Frontend website for the UoA Discords project.
 
