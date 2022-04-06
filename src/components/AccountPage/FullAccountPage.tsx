@@ -1,11 +1,11 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Container, Grid, Tooltip, Typography } from '@mui/material';
-import moment from 'moment';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { FullDiscordAccessResponse } from '../../hooks/useDiscordAccess';
 import { FullUserResponse } from '../../hooks/useDiscordUser';
-import api from '../../api';
+import { Link } from 'react-router-dom';
 import './FullAccountPage.css';
+import moment from 'moment';
+import api from '../../api';
 
 // badges, coming soon
 // import VerifiedIcon from '@mui/icons-material/Verified';
@@ -69,6 +69,10 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
         window.location.href = '/';
     }, [clearDiscordAccess, clearUser, discordAccess.access_token]);
 
+    // const [isAdding, setIsAdding] = useState<boolean>(false);
+
+    // const handleToggleAdd = useCallback(() => {}, []);
+
     return (
         <Container maxWidth="sm" sx={{ pt: 3, maxWidth: '100vw', overflowX: 'hidden' }}>
             <Grid container spacing={1}>
@@ -126,6 +130,9 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                     </Grid>
                 </Grid>
             </Grid>
+            {/* <Collapse in>
+                <TextField label="Paste Discord Invite" placeholder="https://discord.gg/abc123" fullWidth />
+            </Collapse> */}
         </Container>
     );
 };

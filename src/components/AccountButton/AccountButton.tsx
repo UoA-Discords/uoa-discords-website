@@ -1,10 +1,9 @@
 import { CircularProgress, Collapse, ListItemButton, Stack, Typography } from '@mui/material';
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import useDiscordAccess from '../../hooks/useDiscordAccess';
 import useDiscordUser from '../../hooks/useDiscordUser';
 import discordIcon from '../../images/discordIcon.svg';
-import './AccountButton.css';
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const AccountButton = () => {
     const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -34,7 +33,7 @@ const AccountButton = () => {
             <div
                 onMouseOver={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className="noSelect accountButton"
+                className="noSelect"
                 style={{
                     position: 'absolute',
                     top: 0,

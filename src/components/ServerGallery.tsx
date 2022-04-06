@@ -1,5 +1,4 @@
 import { Grid } from '@mui/material';
-import React from 'react';
 import sampleData from '../sampleData';
 import ServerCard from './ServerCard';
 
@@ -13,7 +12,6 @@ const ServerGallery = () => {
             ))}
         </Grid>
     );
-    // return <div>ServerGallery</div>;
 };
 
 export default ServerGallery;

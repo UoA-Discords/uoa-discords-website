@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import { Link } from 'react-router-dom';
@@ -9,7 +8,7 @@ const CLIENT_ID = '958568584349618227';
 const SCOPES = ['guilds', 'identify'].join('%20');
 const REDIRECT_URI = encodeURIComponent(`${window.location.origin}/auth`);
 
-/** Centralized component to redirect user to Discord OAuth endpoint.
+/** Centralized component to redirect user to the Discord OAuth endpoint.
  *
  * This is here because we have (or likely will have) lots of places that you should be able to login from.
  */
