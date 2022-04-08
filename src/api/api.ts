@@ -1,5 +1,5 @@
 import Config from '../types/Config';
-import { ServerAPI } from '@uoa-discords/shared-utils';
+import Server from './Server';
 
 let config: Config = require('../config.json');
 
@@ -10,5 +10,5 @@ try {
     // don't care
 }
 
-const server = new ServerAPI(config.serverURL);
+const server = new Server(config.serverURL);
 export default server;
