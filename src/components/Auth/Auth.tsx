@@ -10,6 +10,7 @@ enum AuthStages {
     Loading,
     CSRF,
     Errored,
+    Down,
     Exiting,
 }
 
@@ -33,15 +34,19 @@ const Auth = () => {
                     setAuthStage(AuthStages.Exiting);
                     window.open('/', '_self');
                 } else {
-                    setAuthStage(AuthStages.Errored);
-                    console.error(res.error);
+                    console.log('Hello console viewer, here is your error object :)', res.error.toJSON());
+                    if (res.error.message === 'Network Error') {
+                        setAuthStage(AuthStages.Down);
+                    } else {
+                        setAuthStage(AuthStages.Errored);
+                    }
                 }
             });
         } else if (authStage !== AuthStages.Exiting) {
             clearDiscordAccess();
             if (oauth_state && oauth_state !== receivedState) {
                 setAuthStage(AuthStages.CSRF);
-            } else {
+            } else if (authStage !== AuthStages.Down) {
                 setAuthStage(AuthStages.Errored);
             }
         }
@@ -85,6 +90,20 @@ const Auth = () => {
             );
         case AuthStages.Exiting:
             return <Typography>Sucess!</Typography>;
+        case AuthStages.Down:
+            return (
+                <Container>
+                    <Typography variant="h3" gutterBottom>
+                        Error
+                    </Typography>
+                    <Typography gutterBottom>
+                        Our API seems to be down right now. Please try again later and contact us if it's still down.
+                    </Typography>
+                    <Button variant="outlined" sx={{ mt: 1 }} onClick={() => window.open('/', '_self')}>
+                        Back
+                    </Button>
+                </Container>
+            );
         case AuthStages.Errored:
         default:
             return (
