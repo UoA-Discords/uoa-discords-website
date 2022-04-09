@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Container, Grid, Tooltip, Typography } from '@mui/material';
+import { Button, Container, Fade, Grid, Tooltip, Typography } from '@mui/material';
 import { FullDiscordAccessResponse } from '../../hooks/useDiscordAccess';
 import { FullUserResponse } from '../../hooks/useDiscordUser';
 import { Link } from 'react-router-dom';
 import './FullAccountPage.css';
 import moment from 'moment';
 import api from '../../api';
+import AddServerPage from '../AddServerPage';
 
 // badges, coming soon
 // import VerifiedIcon from '@mui/icons-material/Verified';
@@ -47,20 +48,22 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
         return () => clearInterval(interval);
     }, [discordAccess.expires_at, discordAccess.issued_at]);
 
+    const [failedRefresh, setFailedRefresh] = useState<boolean>(false);
     // refreshing token if close to expiration (<= 5 days)
     useEffect(() => {
         const daysTilExpiry = (discordAccess.expires_at - Date.now()) / (1000 * 60 * 60 * 24);
 
-        if (daysTilExpiry <= 5) {
+        if (daysTilExpiry <= 5 && !failedRefresh) {
             api.refreshToken(discordAccess.refresh_token).then((res) => {
                 if (res.success) {
                     setDiscordAccess(res.data, 'refresh');
                 } else {
-                    console.error(res.error);
+                    setFailedRefresh(true);
+                    console.log('Failed to refresh token, API might be down?', res.error.toJSON());
                 }
             });
         }
-    }, [discordAccess.expires_at, discordAccess.refresh_token, setDiscordAccess]);
+    }, [discordAccess.expires_at, discordAccess.refresh_token, failedRefresh, setDiscordAccess]);
 
     const handleLogout = useCallback(() => {
         api.revokeToken(discordAccess.access_token);
@@ -69,9 +72,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
         window.location.href = '/';
     }, [clearDiscordAccess, clearUser, discordAccess.access_token]);
 
-    // const [isAdding, setIsAdding] = useState<boolean>(false);
-
-    // const handleToggleAdd = useCallback(() => {}, []);
+    const [isAdding, setIsAdding] = useState<boolean>(false);
 
     return (
         <Container maxWidth="sm" sx={{ pt: 3, maxWidth: '100vw', overflowX: 'hidden' }}>
@@ -105,34 +106,40 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                         </Tooltip>
                         .
                     </Typography>
+                    <Fade in={failedRefresh}>
+                        <Tooltip title={<Typography>Our API is probably down.</Typography>} placement="right" arrow>
+                            <Typography>
+                                <span className="sessionTimeInfo" style={{ color: 'lightcoral' }}>
+                                    Refresh failed
+                                </span>
+                            </Typography>
+                        </Tooltip>
+                    </Fade>
                 </Grid>
                 <Grid item xs={12} container spacing={1} sx={{ mt: 1 }}>
                     <Grid item>
                         <Link to="/" style={{ textDecoration: 'none' }}>
-                            <Tooltip title={<Typography>Return to the home page</Typography>} arrow>
-                                <Button variant="outlined">Home</Button>
-                            </Tooltip>
+                            <Button variant="outlined">Home</Button>
                         </Link>
                     </Grid>
                     <Grid item>
-                        <Tooltip title={<Typography>Log out of Discord</Typography>} arrow>
-                            <Button variant="outlined" color="warning" onClick={handleLogout}>
-                                Log out
-                            </Button>
-                        </Tooltip>
+                        <Button variant="outlined" color="warning" onClick={handleLogout}>
+                            Log out
+                        </Button>
                     </Grid>
                     <Grid item>
-                        <Tooltip title={<Typography>Add a server application</Typography>} arrow>
-                            <Button variant="outlined" color="info">
-                                Add Server
-                            </Button>
-                        </Tooltip>
+                        <Button
+                            sx={{ width: '118px' }}
+                            variant="outlined"
+                            color={isAdding ? 'error' : 'info'}
+                            onClick={() => setIsAdding(!isAdding)}
+                        >
+                            {isAdding ? 'Cancel' : 'Add Server'}
+                        </Button>
                     </Grid>
                 </Grid>
             </Grid>
-            {/* <Collapse in>
-                <TextField label="Paste Discord Invite" placeholder="https://discord.gg/abc123" fullWidth />
-            </Collapse> */}
+            <AddServerPage isOpen={isAdding} />
         </Container>
     );
 };
