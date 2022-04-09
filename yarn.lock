@@ -2270,10 +2270,10 @@
     "@typescript-eslint/types" "5.18.0"
     eslint-visitor-keys "^3.0.0"
 
-"@uoa-discords/shared-utils@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@uoa-discords/shared-utils/-/shared-utils-1.0.1.tgz#ec04f4c00902e470dbf524304ffdf5aac9977d5d"
-  integrity sha512-qvznloK+8JVgAuWP8tHveWlYxS+fzRHjI1HEC/TCa6csQ02cpPfserbDDm8QzEUUV2ppTnnVBat+ybwNBfNCbg==
+"@uoa-discords/shared-utils@^1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@uoa-discords/shared-utils/-/shared-utils-1.1.6.tgz#4b46f8cbeb249877bccb812d3d571e9e248ecac4"
+  integrity sha512-PljCKYMbYL5slzk5eso/lMMz1XPcf5l73o7exVFfp6yUlpKRH4Sw/bVXrTnqMXJktTbH0ovuICiaW9afsJWkfg==
 
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
