@@ -1,96 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, CircularProgress, Collapse, Fade, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import { DiscordAPI, HelperAPI, Invite, VerificationLevels } from '@uoa-discords/shared-utils';
+import { Button, CircularProgress, Collapse, Fade, Stack, TextField } from '@mui/material';
+import { DiscordAPI, Invite } from '@uoa-discords/shared-utils';
 import useDebounce from '../../hooks/useDebounce';
-import moment from 'moment';
-import InvalidIcon from '@mui/icons-material/Close';
+import { steps } from './steps';
+import ValidationStep from './ValidationStep';
 import ValidIcon from '@mui/icons-material/Check';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-
-type ValidationStepFunction = (
-    i: Invite,
-) => [passes: boolean | 'maybe', content: string | JSX.Element, tooltip?: string];
-
-const verificationLevelNameMap: Record<VerificationLevels, string> = {
-    [VerificationLevels.NONE]: 'no',
-    [VerificationLevels.LOW]: 'a low',
-    [VerificationLevels.MEDIUM]: 'a medium',
-    [VerificationLevels.HIGH]: 'a high',
-    [VerificationLevels.VERY_HIGH]: 'a very high',
-};
-
-const validationSteps: ValidationStepFunction[] = [
-    (i) => {
-        if (i.expires_at) {
-            return [
-                false,
-                <>
-                    Invite expires <span style={{ color: 'lightcoral' }}>{moment(i.expires_at).fromNow()}</span>
-                </>,
-            ];
-        } else return [true, "Invite doesn't expire"];
-    },
-    (i) => {
-        if (i.approximate_member_count < 100) {
-            return [
-                false,
-                <>
-                    {i.guild?.name || 'Unknown guild'} does not have enough members (
-                    <span style={{ color: 'lightcoral' }}>{i.approximate_member_count}</span> / 100)
-                </>,
-            ];
-        } else return [true, 'Has > 100 members'];
-    },
-    (i) => {
-        if (i.guild?.verification_level === undefined) return ['maybe', 'Unknown verification level'];
-        if (i.guild.verification_level >= VerificationLevels.LOW)
-            return [
-                true,
-                <>
-                    {i.guild.name || 'unknown guild'} has{' '}
-                    <span style={{ color: 'lightgreen' }}>{verificationLevelNameMap[i.guild.verification_level]}</span>{' '}
-                    verification level
-                </>,
-            ];
-        return [
-            'maybe',
-            <>
-                {i.guild.name || 'unknown guild'} has <span style={{ color: 'lightcoral' }}>no</span> verification level
-            </>,
-            'Recommended verification level is low or greater',
-        ];
-    },
-];
-
-const ValidationStep = ({ invite, index, step }: { invite: Invite; index: number; step: ValidationStepFunction }) => {
-    const [passed, payload, tooltip] = step(invite);
-
-    const [shouldFadeIn, setShouldFadeIn] = useState<boolean>(false);
-    useEffect(() => {
-        const randomDelay = index * 100;
-
-        const timeout = setTimeout(() => setShouldFadeIn(true), randomDelay);
-
-        return () => clearTimeout(timeout);
-    }, [index]);
-
-    return (
-        <Fade in={shouldFadeIn}>
-            <Tooltip title={tooltip ? <Typography>{tooltip}</Typography> : ''} arrow placement="right">
-                <Stack direction="row" alignItems="center" spacing={1}>
-                    {passed === 'maybe' ? (
-                        <PriorityHighIcon color="warning" />
-                    ) : passed ? (
-                        <ValidIcon color="success" />
-                    ) : (
-                        <InvalidIcon color="error" />
-                    )}
-                    <span>{payload}</span>
-                </Stack>
-            </Tooltip>
-        </Fade>
-    );
-};
 
 interface AddServerPageProps {
     isOpen: boolean;
@@ -170,7 +84,7 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
             if (res.success) {
                 setInviteStatus(res.data);
 
-                setIsSubmittable(HelperAPI.verifyGuild(res.data) === true);
+                setIsSubmittable(steps.every((e) => e(res.data).passes !== false));
             } else {
                 console.error(res.error);
                 setInviteStatus(null);
@@ -240,10 +154,9 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
                         </span>
                     </Stack>
                 </Collapse>
-                {!!inviteStatus &&
-                    validationSteps.map((e, i) => <ValidationStep step={e} index={i} invite={inviteStatus} key={i} />)}
+                {!!inviteStatus && steps.map((e, i) => <ValidationStep step={e(inviteStatus)} index={i} key={i} />)}
                 <Fade in={isSubmittable}>
-                    <Button size="large" variant="outlined" color="success" style={{ marginRight: '59px' }}>
+                    <Button size="large" variant="outlined" color="success">
                         Apply
                     </Button>
                 </Fade>

@@ -2271,9 +2271,9 @@
     eslint-visitor-keys "^3.0.0"
 
 "@uoa-discords/shared-utils@^1.1.6":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@uoa-discords/shared-utils/-/shared-utils-1.1.6.tgz#4b46f8cbeb249877bccb812d3d571e9e248ecac4"
-  integrity sha512-PljCKYMbYL5slzk5eso/lMMz1XPcf5l73o7exVFfp6yUlpKRH4Sw/bVXrTnqMXJktTbH0ovuICiaW9afsJWkfg==
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@uoa-discords/shared-utils/-/shared-utils-1.1.7.tgz#40d76d4477c882bc6cef4676f757f0c53c03e165"
+  integrity sha512-tzy+lm6hBi/5uTB0KJ8+G/fXxyAdOq7EKjlHv4hZPMV7Ej+cz1BNz+R+5LDqMfURpUvKT78u+B+3xO7IKOteXA==
 
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
