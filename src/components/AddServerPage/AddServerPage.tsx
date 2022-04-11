@@ -37,10 +37,15 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
     const [serverStatus, setServerStatus] = useState<string | true | null>(null);
     const [isVerifierOverride, setIsVerifierOverride] = useState<boolean>(false);
 
-    const [tags, setTags] = useState<TagNames[]>([]);
-    const handleTagsChange = useCallback((t: Set<TagNames>) => {
-        setTags(Array.from(t));
-    }, []);
+    const [tags, setTags] = useState<Set<TagNames>>(new Set());
+    const handleTagChange = useCallback(
+        (t: TagNames) => {
+            if (tags.has(t)) tags.delete(t);
+            else tags.add(t);
+            setTags(new Set(tags));
+        },
+        [tags],
+    );
 
     // autofocus text input on open
     useEffect(() => {
@@ -51,6 +56,7 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
     useEffect(() => {
         setIsSubmittable(false);
         setServerStatus(null);
+        setTags(new Set());
         const invite = debouncedInput;
         if (!invite.trim().length) {
             setValidationStatus(null);
@@ -112,7 +118,7 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
         const body: WebApplication = {
             inviteCode: inviteStatus.code,
             authToken: access_token,
-            tags,
+            tags: Array.from(tags),
         };
 
         setIsServerVerifying(true);
@@ -212,7 +218,7 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
                         <Typography color="gray" gutterBottom>
                             Select Tags (optional)
                         </Typography>
-                        <TagSelector tagChangeCallback={handleTagsChange} />
+                        <TagSelector selectedTags={tags} tagChangeCallback={handleTagChange} />
                     </Stack>
                 </Fade>
                 <Fade in={isSubmittable}>

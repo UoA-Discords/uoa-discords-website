@@ -1,29 +1,13 @@
 import { Chip, Grid, Typography } from '@mui/material';
-import { useCallback, useState } from 'react';
 import { TagNames, Tags } from '@uoa-discords/shared-utils';
 import LightTooltip from '../LightTooltip';
 
 interface TagSelectorProps {
-    tagChangeCallback: (t: Set<TagNames>) => void;
+    selectedTags: Set<TagNames>;
+    tagChangeCallback: (t: TagNames) => void;
 }
 
-const TagSelector = ({ tagChangeCallback }: TagSelectorProps) => {
-    const [selectedTags, setSelectedTags] = useState<Set<TagNames>>(new Set());
-
-    const toggleTag = useCallback(
-        (t: TagNames) => {
-            return () => {
-                if (selectedTags.has(t)) selectedTags.delete(t);
-                else selectedTags.add(t);
-
-                const newTagsSet = new Set(selectedTags);
-                setSelectedTags(newTagsSet);
-                tagChangeCallback(newTagsSet);
-            };
-        },
-        [selectedTags, tagChangeCallback],
-    );
-
+const TagSelector = ({ selectedTags, tagChangeCallback }: TagSelectorProps) => {
     return (
         <Grid container spacing={1}>
             {Object.keys(Tags).map((e, index) => {
@@ -39,7 +23,7 @@ const TagSelector = ({ tagChangeCallback }: TagSelectorProps) => {
                                 variant="outlined"
                                 color={isSelected ? 'success' : undefined}
                                 clickable
-                                onClick={toggleTag(tagName)}
+                                onClick={() => tagChangeCallback(tagName)}
                             />
                         </LightTooltip>
                     </Grid>
