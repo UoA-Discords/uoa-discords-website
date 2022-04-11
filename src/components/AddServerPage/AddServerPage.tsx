@@ -113,7 +113,6 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
             inviteCode: inviteStatus.code,
             authToken: access_token,
             tags,
-            dryRun: true,
         };
 
         setIsServerVerifying(true);
@@ -125,9 +124,15 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
                 if (res.error.response?.data) {
                     setServerStatus(res.error.response.data as string);
                 } else {
-                    console.log(
-                        `Unknown error occurred${res.error.response?.status ? ` (${res.error.response.status})` : ''}`,
-                    );
+                    if (!res.error.response) {
+                        setServerStatus(`No response - servers are probably down`);
+                    } else {
+                        setServerStatus(
+                            `Unknown error occurred${
+                                res.error.response?.status ? ` (${res.error.response.status})` : ''
+                            }`,
+                        );
+                    }
                 }
             }
         });
