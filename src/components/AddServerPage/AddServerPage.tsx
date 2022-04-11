@@ -126,16 +126,26 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
                         placeholder="https://discord.gg/abc123"
                         fullWidth
                     />
-                    <div style={{ position: 'relative', height: '50px', width: '50px' }}>
+                    <div
+                        style={{
+                            position: 'relative',
+                            height: '50px',
+                            width: '50px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <Fade in={!!inviteStatus?.guild?.icon}>
-                            <img
-                                src={`https://cdn.discordapp.com/icons/${inviteStatus?.guild?.id || ''}/${
-                                    inviteStatus?.guild?.icon || ''
-                                }`}
-                                alt="Discord server icon"
-                                style={{ height: '100%' }}
-                                className="discordProfilePicture"
-                            />
+                            {!!inviteStatus?.guild?.icon ? (
+                                <img
+                                    src={`https://cdn.discordapp.com/icons/${inviteStatus.guild.id}/${inviteStatus.guild.icon}`}
+                                    alt="Discord server icon"
+                                    style={{ width: '100%' }}
+                                    className="discordProfilePicture"
+                                />
+                            ) : (
+                                <span></span>
+                            )}
                         </Fade>
                     </div>
                 </Stack>
