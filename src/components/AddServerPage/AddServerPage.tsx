@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, CircularProgress, Collapse, Fade, Stack, TextField } from '@mui/material';
-import { DiscordAPI, Invite, WebApplication } from '@uoa-discords/shared-utils';
+import { Button, CircularProgress, Collapse, Fade, Stack, TextField, Typography } from '@mui/material';
+import { DiscordAPI, Invite, TagNames, WebApplication } from '@uoa-discords/shared-utils';
 import useDebounce from '../../hooks/useDebounce';
 import { steps } from './steps';
 import ValidationStep from './ValidationStep';
@@ -8,6 +8,7 @@ import ValidIcon from '@mui/icons-material/Check';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import server from '../../api';
+import TagSelector from '../TagSelector';
 
 interface AddServerPageProps {
     isOpen: boolean;
@@ -35,7 +36,11 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
     // server validation
     const [serverStatus, setServerStatus] = useState<string | true | null>(null);
 
-    // const [tags, setTags] = useState<TagNames[]>([]);
+    const [tags, setTags] = useState<TagNames[]>([]);
+    const handleTagsChange = useCallback((t: Set<TagNames>) => {
+        setTags(Array.from(t));
+        console.log(Array.from(t));
+    }, []);
 
     // autofocus text input on open
     useEffect(() => {
@@ -107,7 +112,7 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
         const body: WebApplication = {
             inviteCode: inviteStatus.code,
             authToken: access_token,
-            tags: [],
+            tags,
             dryRun: true,
         };
 
@@ -126,7 +131,7 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
                 }
             }
         });
-    }, [access_token, inviteStatus]);
+    }, [access_token, inviteStatus, tags]);
 
     return (
         <Fade in={isOpen}>
@@ -195,6 +200,12 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
                     </Stack>
                 </Collapse>
                 {!!inviteStatus && steps.map((e, i) => <ValidationStep step={e(inviteStatus)} index={i} key={i} />)}
+                <Stack>
+                    <Typography color="gray" gutterBottom>
+                        Select Tags
+                    </Typography>
+                    <TagSelector tagChangeCallback={handleTagsChange} />
+                </Stack>
                 <Fade in={isSubmittable}>
                     <Button
                         size="large"
