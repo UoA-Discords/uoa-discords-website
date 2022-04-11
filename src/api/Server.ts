@@ -52,7 +52,14 @@ export default class Server {
         return await this.requestWrapper('/auth/revokeToken', { token });
     }
 
-    public async makeApplication(body: WebApplication): Promise<APIResponse<boolean>> {
+    public async makeApplication(
+        body: WebApplication,
+    ): Promise<APIResponse<{ message: string; verifierOverride: boolean }>> {
+        for (let i = 0; i < body.tags.length; i++) {
+            if (typeof body.tags[i] === 'string') {
+                body.tags[i] = parseInt(body.tags[i] as unknown as string);
+            }
+        }
         return await this.requestWrapper('/applications/applyWeb', body, 201);
     }
 }

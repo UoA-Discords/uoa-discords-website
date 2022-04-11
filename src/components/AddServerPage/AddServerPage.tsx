@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, CircularProgress, Collapse, Fade, Stack, TextField, Typography } from '@mui/material';
+import { Button, CircularProgress, Collapse, Fade, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { DiscordAPI, Invite, TagNames, WebApplication } from '@uoa-discords/shared-utils';
 import useDebounce from '../../hooks/useDebounce';
 import { steps } from './steps';
@@ -35,11 +35,11 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
 
     // server validation
     const [serverStatus, setServerStatus] = useState<string | true | null>(null);
+    const [isVerifierOverride, setIsVerifierOverride] = useState<boolean>(false);
 
     const [tags, setTags] = useState<TagNames[]>([]);
     const handleTagsChange = useCallback((t: Set<TagNames>) => {
         setTags(Array.from(t));
-        console.log(Array.from(t));
     }, []);
 
     // autofocus text input on open
@@ -120,6 +120,8 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
             setIsServerVerifying(false);
             if (res.success) {
                 setServerStatus(true);
+                const { verifierOverride } = res.data;
+                setIsVerifierOverride(verifierOverride);
             } else {
                 if (res.error.response?.data) {
                     setServerStatus(res.error.response.data as string);
@@ -205,12 +207,14 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
                     </Stack>
                 </Collapse>
                 {!!inviteStatus && steps.map((e, i) => <ValidationStep step={e(inviteStatus)} index={i} key={i} />)}
-                <Stack>
-                    <Typography color="gray" gutterBottom>
-                        Select Tags
-                    </Typography>
-                    <TagSelector tagChangeCallback={handleTagsChange} />
-                </Stack>
+                <Fade in={isSubmittable}>
+                    <Stack>
+                        <Typography color="gray" gutterBottom>
+                            Select Tags (optional)
+                        </Typography>
+                        <TagSelector tagChangeCallback={handleTagsChange} />
+                    </Stack>
+                </Fade>
                 <Fade in={isSubmittable}>
                     <Button
                         size="large"
@@ -240,6 +244,14 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
                         )}
                     </Stack>
                 </Collapse>
+                <Fade in={(isServerVerifying || !!serverStatus) && isVerifierOverride}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        <ErrorOutlineIcon color="disabled" />
+                        <Tooltip title="Since you are a server verifier, you can have more than application at a time.">
+                            <span style={{ color: 'gray' }}>Overriding application limit</span>
+                        </Tooltip>
+                    </Stack>
+                </Fade>
             </Stack>
         </Fade>
     );
