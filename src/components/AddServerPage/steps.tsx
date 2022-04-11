@@ -1,4 +1,4 @@
-import { HelperAPI, Invite, VerificationLevels } from '@uoa-discords/shared-utils';
+import { BlacklistedGuilds, HelperAPI, Invite, OptOutGuilds, VerificationLevels } from '@uoa-discords/shared-utils';
 import moment from 'moment';
 
 const verificationLevelNameMap: Record<VerificationLevels, string> = {
@@ -17,7 +17,7 @@ export interface StepReturn {
     passes: boolean | null;
 
     /** Text content to display. */
-    content: string | JSX.Element;
+    content: string | JSX.Element | null;
 
     /** Optional tooltip to display. */
     tooltip?: string;
@@ -87,12 +87,12 @@ export const steps: StepCallback[] = [
         if (guild.icon) {
             return {
                 passes: true,
-                content: <>Has a server icon</>,
+                content: null,
             };
         }
         return {
             passes: false,
-            content: <>No server icon</>,
+            content: <span style={{ color: 'lightcoral' }}>No server icon</span>,
         };
     },
     ({ guild }) => {
@@ -124,6 +124,26 @@ export const steps: StepCallback[] = [
                 </>
             ),
             tooltip: 'Recommended to be low or greater',
+        };
+    },
+    ({ guild }) => {
+        if (guild?.id && BlacklistedGuilds.has(guild.id)) {
+            return {
+                passes: false,
+                content: <span style={{ color: 'lightcoral' }}>Blacklisted guild</span>,
+                tooltip: 'This guild is blacklisted from the site',
+            };
+        }
+        if (guild?.id && OptOutGuilds.has(guild.id)) {
+            return {
+                passes: false,
+                content: <span style={{ color: 'lightcoral' }}>Opted Out guild</span>,
+                tooltip: 'This guild has opted out from the site',
+            };
+        }
+        return {
+            passes: true,
+            content: null,
         };
     },
 ];

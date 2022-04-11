@@ -1,20 +1,24 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, CircularProgress, Collapse, Fade, Stack, TextField } from '@mui/material';
-import { DiscordAPI, Invite } from '@uoa-discords/shared-utils';
+import { DiscordAPI, Invite, WebApplication } from '@uoa-discords/shared-utils';
 import useDebounce from '../../hooks/useDebounce';
 import { steps } from './steps';
 import ValidationStep from './ValidationStep';
 import ValidIcon from '@mui/icons-material/Check';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import server from '../../api';
 
 interface AddServerPageProps {
     isOpen: boolean;
+    access_token: string;
 }
 
-const AddServerPage = ({ isOpen }: AddServerPageProps) => {
+const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
     const inputRef = useRef<HTMLTextAreaElement>();
 
     const [isClientVerifying, setIsClientVerifying] = useState<boolean>(false);
-    // const [isServerVerifying, setIsServerVerifying] = useState<boolean>(false);
+    const [isServerVerifying, setIsServerVerifying] = useState<boolean>(false);
 
     const [input, setInput] = useState<string>('');
     const debouncedInput = useDebounce<string>(input, 1000);
@@ -29,7 +33,9 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
     const [isSubmittable, setIsSubmittable] = useState<boolean>(false);
 
     // server validation
-    // const [serverStatus, setServerStatus] = useState<ApplicationResponses | null>(null);
+    const [serverStatus, setServerStatus] = useState<string | true | null>(null);
+
+    // const [tags, setTags] = useState<TagNames[]>([]);
 
     // autofocus text input on open
     useEffect(() => {
@@ -38,6 +44,8 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
 
     // syntax validation
     useEffect(() => {
+        setIsSubmittable(false);
+        setServerStatus(null);
         const invite = debouncedInput;
         if (!invite.trim().length) {
             setValidationStatus(null);
@@ -93,10 +101,32 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
         });
     }, [validationStatus]);
 
-    // server validation
-    useEffect(() => {
-        // this will probably be an onClick
-    }, []);
+    const submitApplication = useCallback(() => {
+        if (!inviteStatus) return;
+
+        const body: WebApplication = {
+            inviteCode: inviteStatus.code,
+            authToken: access_token,
+            tags: [],
+            dryRun: true,
+        };
+
+        setIsServerVerifying(true);
+        server.makeApplication(body).then((res) => {
+            setIsServerVerifying(false);
+            if (res.success) {
+                setServerStatus(true);
+            } else {
+                if (res.error.response?.data) {
+                    setServerStatus(res.error.response.data as string);
+                } else {
+                    console.log(
+                        `Unknown error occurred${res.error.response?.status ? ` (${res.error.response.status})` : ''}`,
+                    );
+                }
+            }
+        });
+    }, [access_token, inviteStatus]);
 
     return (
         <Fade in={isOpen}>
@@ -166,10 +196,34 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
                 </Collapse>
                 {!!inviteStatus && steps.map((e, i) => <ValidationStep step={e(inviteStatus)} index={i} key={i} />)}
                 <Fade in={isSubmittable}>
-                    <Button size="large" variant="outlined" color="success">
+                    <Button
+                        size="large"
+                        variant="outlined"
+                        color="success"
+                        onClick={submitApplication}
+                        disabled={isServerVerifying || serverStatus !== null}
+                    >
                         Apply
                     </Button>
                 </Fade>
+                <Collapse in={isServerVerifying || !!serverStatus}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        {isServerVerifying ? (
+                            <CircularProgress size={24} />
+                        ) : serverStatus === true ? (
+                            <DoneAllIcon color="success" />
+                        ) : (
+                            <ErrorOutlineIcon color="error" />
+                        )}
+                        {isServerVerifying ? (
+                            <span style={{ color: 'gray' }}>Making request</span>
+                        ) : (
+                            <span style={{ color: serverStatus === true ? 'lightgreen' : 'lightcoral' }}>
+                                {serverStatus === true ? 'Application submitted!' : serverStatus}
+                            </span>
+                        )}
+                    </Stack>
+                </Collapse>
             </Stack>
         </Fade>
     );

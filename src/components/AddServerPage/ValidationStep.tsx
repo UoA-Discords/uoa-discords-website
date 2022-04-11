@@ -18,6 +18,8 @@ const ValidationStep = ({ index, step }: { index: number; step: StepReturn }) =>
         return () => clearTimeout(timeout);
     }, [index]);
 
+    if (passes && content === null) return <></>;
+
     return (
         <Fade in={shouldFadeIn}>
             <Stack direction="row" alignItems="center" spacing={1}>
