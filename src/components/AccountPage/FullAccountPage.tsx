@@ -8,6 +8,7 @@ import moment from 'moment';
 import api from '../../api';
 import AddServerPage from '../AddServerPage';
 import useBadges from '../../hooks/useBadges';
+import { Verifiers } from '@uoa-discords/shared-utils';
 
 interface FullAccountPageProps {
     userCookie: FullUserResponse;
@@ -71,6 +72,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
     const [isAdding, setIsAdding] = useState<boolean>(false);
 
     const badges = useBadges(user.id);
+    const isVerifier = useMemo<boolean>(() => Verifiers.has(user.id), [user.id]);
 
     return (
         <Container maxWidth="sm" sx={{ pt: 3, maxWidth: '100vw', overflowX: 'hidden' }}>
@@ -136,6 +138,15 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                             {isAdding ? 'Cancel' : 'Add Server'}
                         </Button>
                     </Grid>
+                    {isVerifier && (
+                        <Grid item>
+                            <Link to="/applications" target="_blank" style={{ textDecoration: 'none' }}>
+                                <Button variant="outlined" color="secondary">
+                                    Applications
+                                </Button>
+                            </Link>
+                        </Grid>
+                    )}
                 </Grid>
             </Grid>
             <AddServerPage isOpen={isAdding} access_token={discordAccess.access_token} />

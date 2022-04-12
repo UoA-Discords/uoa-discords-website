@@ -3,13 +3,13 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { DiscordAPI } from '@uoa-discords/shared-utils';
 import './App.css';
 import AccountPage from './components/AccountPage';
-import Apply from './components/Apply';
 import Auth from './components/Auth';
 import LoginRedirect from './components/LoginRedirect';
 import MainPage from './components/MainPage';
 import NotFound from './components/NotFound';
 import useDiscordAccess from './hooks/useDiscordAccess';
 import useDiscordUser from './hooks/useDiscordUser';
+import ApplicationsPage from './components/ApplicationsPage';
 
 function App() {
     const { discordAccess } = useDiscordAccess();
@@ -35,7 +35,7 @@ function App() {
                 <Route path="auth" element={<Auth />} />
                 <Route path="me" element={<AccountPage />} />
                 <Route path="login" element={<LoginRedirect />} />
-                <Route path="apply" element={<Apply />} />
+                <Route path="applications" element={<ApplicationsPage />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </BrowserRouter>
