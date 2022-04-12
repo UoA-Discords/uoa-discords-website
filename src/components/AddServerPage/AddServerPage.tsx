@@ -1,106 +1,25 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, CircularProgress, Collapse, Fade, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import { DiscordAPI, HelperAPI, Invite, VerificationLevels } from '@uoa-discords/shared-utils';
+import { DiscordAPI, Invite, TagNames, WebApplication } from '@uoa-discords/shared-utils';
 import useDebounce from '../../hooks/useDebounce';
-import moment from 'moment';
-import InvalidIcon from '@mui/icons-material/Close';
+import { steps } from './steps';
+import ValidationStep from './ValidationStep';
 import ValidIcon from '@mui/icons-material/Check';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-
-type ValidationStepFunction = (
-    i: Invite,
-) => [passes: boolean | 'maybe', content: string | JSX.Element, tooltip?: string];
-
-const verificationLevelNameMap: Record<VerificationLevels, string> = {
-    [VerificationLevels.NONE]: 'no',
-    [VerificationLevels.LOW]: 'a low',
-    [VerificationLevels.MEDIUM]: 'a medium',
-    [VerificationLevels.HIGH]: 'a high',
-    [VerificationLevels.VERY_HIGH]: 'a very high',
-};
-
-const validationSteps: ValidationStepFunction[] = [
-    (i) => {
-        if (i.expires_at) {
-            return [
-                false,
-                <>
-                    Invite expires <span style={{ color: 'lightcoral' }}>{moment(i.expires_at).fromNow()}</span>
-                </>,
-            ];
-        } else return [true, "Invite doesn't expire"];
-    },
-    (i) => {
-        if (i.approximate_member_count < 100) {
-            return [
-                false,
-                <>
-                    {i.guild?.name || 'Unknown guild'} does not have enough members (
-                    <span style={{ color: 'lightcoral' }}>{i.approximate_member_count}</span> / 100)
-                </>,
-            ];
-        } else return [true, 'Has > 100 members'];
-    },
-    (i) => {
-        if (i.guild?.verification_level === undefined) return ['maybe', 'Unknown verification level'];
-        if (i.guild.verification_level >= VerificationLevels.LOW)
-            return [
-                true,
-                <>
-                    {i.guild.name || 'unknown guild'} has{' '}
-                    <span style={{ color: 'lightgreen' }}>{verificationLevelNameMap[i.guild.verification_level]}</span>{' '}
-                    verification level
-                </>,
-            ];
-        return [
-            'maybe',
-            <>
-                {i.guild.name || 'unknown guild'} has <span style={{ color: 'lightcoral' }}>no</span> verification level
-            </>,
-            'Recommended verification level is low or greater',
-        ];
-    },
-];
-
-const ValidationStep = ({ invite, index, step }: { invite: Invite; index: number; step: ValidationStepFunction }) => {
-    const [passed, payload, tooltip] = step(invite);
-
-    const [shouldFadeIn, setShouldFadeIn] = useState<boolean>(false);
-    useEffect(() => {
-        const randomDelay = index * 100;
-
-        const timeout = setTimeout(() => setShouldFadeIn(true), randomDelay);
-
-        return () => clearTimeout(timeout);
-    }, [index]);
-
-    return (
-        <Fade in={shouldFadeIn}>
-            <Tooltip title={tooltip ? <Typography>{tooltip}</Typography> : ''} arrow placement="right">
-                <Stack direction="row" alignItems="center" spacing={1}>
-                    {passed === 'maybe' ? (
-                        <PriorityHighIcon color="warning" />
-                    ) : passed ? (
-                        <ValidIcon color="success" />
-                    ) : (
-                        <InvalidIcon color="error" />
-                    )}
-                    <span>{payload}</span>
-                </Stack>
-            </Tooltip>
-        </Fade>
-    );
-};
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import server from '../../api';
+import TagSelector from '../TagSelector';
 
 interface AddServerPageProps {
     isOpen: boolean;
+    access_token: string;
 }
 
-const AddServerPage = ({ isOpen }: AddServerPageProps) => {
+const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
     const inputRef = useRef<HTMLTextAreaElement>();
 
     const [isClientVerifying, setIsClientVerifying] = useState<boolean>(false);
-    // const [isServerVerifying, setIsServerVerifying] = useState<boolean>(false);
+    const [isServerVerifying, setIsServerVerifying] = useState<boolean>(false);
 
     const [input, setInput] = useState<string>('');
     const debouncedInput = useDebounce<string>(input, 1000);
@@ -115,7 +34,18 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
     const [isSubmittable, setIsSubmittable] = useState<boolean>(false);
 
     // server validation
-    // const [serverStatus, setServerStatus] = useState<ApplicationResponses | null>(null);
+    const [serverStatus, setServerStatus] = useState<string | true | null>(null);
+    const [isVerifierOverride, setIsVerifierOverride] = useState<boolean>(false);
+
+    const [tags, setTags] = useState<Set<TagNames>>(new Set());
+    const handleTagChange = useCallback(
+        (t: TagNames) => {
+            if (tags.has(t)) tags.delete(t);
+            else tags.add(t);
+            setTags(new Set(tags));
+        },
+        [tags],
+    );
 
     // autofocus text input on open
     useEffect(() => {
@@ -124,6 +54,9 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
 
     // syntax validation
     useEffect(() => {
+        setIsSubmittable(false);
+        setServerStatus(null);
+        setTags(new Set());
         const invite = debouncedInput;
         if (!invite.trim().length) {
             setValidationStatus(null);
@@ -170,7 +103,7 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
             if (res.success) {
                 setInviteStatus(res.data);
 
-                setIsSubmittable(HelperAPI.verifyGuild(res.data) === true);
+                setIsSubmittable(steps.every((e) => e(res.data).passes !== false));
             } else {
                 console.error(res.error);
                 setInviteStatus(null);
@@ -179,10 +112,39 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
         });
     }, [validationStatus]);
 
-    // server validation
-    useEffect(() => {
-        // this will probably be an onClick
-    }, []);
+    const submitApplication = useCallback(() => {
+        if (!inviteStatus) return;
+
+        const body: WebApplication = {
+            inviteCode: inviteStatus.code,
+            authToken: access_token,
+            tags: Array.from(tags),
+        };
+
+        setIsServerVerifying(true);
+        server.makeApplication(body).then((res) => {
+            setIsServerVerifying(false);
+            if (res.success) {
+                setServerStatus(true);
+                const { verifierOverride } = res.data;
+                setIsVerifierOverride(verifierOverride);
+            } else {
+                if (res.error.response?.data) {
+                    setServerStatus(res.error.response.data as string);
+                } else {
+                    if (!res.error.response) {
+                        setServerStatus(`No response - servers are probably down`);
+                    } else {
+                        setServerStatus(
+                            `Unknown error occurred${
+                                res.error.response?.status ? ` (${res.error.response.status})` : ''
+                            }`,
+                        );
+                    }
+                }
+            }
+        });
+    }, [access_token, inviteStatus, tags]);
 
     return (
         <Fade in={isOpen}>
@@ -212,16 +174,26 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
                         placeholder="https://discord.gg/abc123"
                         fullWidth
                     />
-                    <div style={{ position: 'relative', height: '50px', width: '50px' }}>
+                    <div
+                        style={{
+                            position: 'relative',
+                            height: '50px',
+                            width: '50px',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <Fade in={!!inviteStatus?.guild?.icon}>
-                            <img
-                                src={`https://cdn.discordapp.com/icons/${inviteStatus?.guild?.id || ''}/${
-                                    inviteStatus?.guild?.icon || ''
-                                }`}
-                                alt="Discord server icon"
-                                style={{ height: '100%' }}
-                                className="discordProfilePicture"
-                            />
+                            {!!inviteStatus?.guild?.icon ? (
+                                <img
+                                    src={`https://cdn.discordapp.com/icons/${inviteStatus.guild.id}/${inviteStatus.guild.icon}`}
+                                    alt="Discord server icon"
+                                    style={{ width: '100%' }}
+                                    className="discordProfilePicture"
+                                />
+                            ) : (
+                                <span></span>
+                            )}
                         </Fade>
                     </div>
                 </Stack>
@@ -240,12 +212,51 @@ const AddServerPage = ({ isOpen }: AddServerPageProps) => {
                         </span>
                     </Stack>
                 </Collapse>
-                {!!inviteStatus &&
-                    validationSteps.map((e, i) => <ValidationStep step={e} index={i} invite={inviteStatus} key={i} />)}
+                {!!inviteStatus && steps.map((e, i) => <ValidationStep step={e(inviteStatus)} index={i} key={i} />)}
                 <Fade in={isSubmittable}>
-                    <Button size="large" variant="outlined" color="success" style={{ marginRight: '59px' }}>
+                    <Stack>
+                        <Typography color="gray" gutterBottom>
+                            Select Tags (optional)
+                        </Typography>
+                        <TagSelector selectedTags={tags} tagChangeCallback={handleTagChange} />
+                    </Stack>
+                </Fade>
+                <Fade in={isSubmittable}>
+                    <Button
+                        size="large"
+                        variant="outlined"
+                        color="success"
+                        onClick={submitApplication}
+                        disabled={isServerVerifying || serverStatus !== null}
+                    >
                         Apply
                     </Button>
+                </Fade>
+                <Collapse in={isServerVerifying || !!serverStatus}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        {isServerVerifying ? (
+                            <CircularProgress size={24} />
+                        ) : serverStatus === true ? (
+                            <DoneAllIcon color="success" />
+                        ) : (
+                            <ErrorOutlineIcon color="error" />
+                        )}
+                        {isServerVerifying ? (
+                            <span style={{ color: 'gray' }}>Making request</span>
+                        ) : (
+                            <span style={{ color: serverStatus === true ? 'lightgreen' : 'lightcoral' }}>
+                                {serverStatus === true ? 'Application submitted!' : serverStatus}
+                            </span>
+                        )}
+                    </Stack>
+                </Collapse>
+                <Fade in={(isServerVerifying || !!serverStatus) && isVerifierOverride}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        <ErrorOutlineIcon color="disabled" />
+                        <Tooltip title="Since you are a server verifier, you can have more than application at a time.">
+                            <span style={{ color: 'gray' }}>Overriding application limit</span>
+                        </Tooltip>
+                    </Stack>
                 </Fade>
             </Stack>
         </Fade>

@@ -7,11 +7,7 @@ import './FullAccountPage.css';
 import moment from 'moment';
 import api from '../../api';
 import AddServerPage from '../AddServerPage';
-
-// badges, coming soon
-// import VerifiedIcon from '@mui/icons-material/Verified';
-// import GitHubIcon from '@mui/icons-material/GitHub';
-// import StarIcon from '@mui/icons-material/Star';
+import useBadges from '../../hooks/useBadges';
 
 interface FullAccountPageProps {
     userCookie: FullUserResponse;
@@ -74,6 +70,8 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
 
     const [isAdding, setIsAdding] = useState<boolean>(false);
 
+    const badges = useBadges(user.id);
+
     return (
         <Container maxWidth="sm" sx={{ pt: 3, maxWidth: '100vw', overflowX: 'hidden' }}>
             <Grid container spacing={1}>
@@ -115,6 +113,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                             </Typography>
                         </Tooltip>
                     </Fade>
+                    {badges}
                 </Grid>
                 <Grid item xs={12} container spacing={1} sx={{ mt: 1 }}>
                     <Grid item>
@@ -139,7 +138,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                     </Grid>
                 </Grid>
             </Grid>
-            <AddServerPage isOpen={isAdding} />
+            <AddServerPage isOpen={isAdding} access_token={discordAccess.access_token} />
         </Container>
     );
 };

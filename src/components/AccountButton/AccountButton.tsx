@@ -43,7 +43,7 @@ const AccountButton = () => {
                 <ListItemButton sx={{ borderRadius: '0 0 0 1rem' }}>
                     <Stack direction="row" spacing={1} alignItems="center">
                         {image}
-                        <Collapse in={isHovered} orientation="horizontal">
+                        <Collapse in={isHovered} orientation="horizontal" sx={{ whiteSpace: 'nowrap' }}>
                             {buttonText}
                             <Typography variant="body1" color="gray" sx={{ whiteSpace: 'nowrap' }}>
                                 {buttonDescription}
