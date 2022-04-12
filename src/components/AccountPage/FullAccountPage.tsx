@@ -128,7 +128,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                     </Grid>
                     <Grid item>
                         <Button
-                            sx={{ width: '118px' }}
+                            sx={{ width: '118px', whiteSpace: 'nowrap' }}
                             variant="outlined"
                             color={isAdding ? 'error' : 'info'}
                             onClick={() => setIsAdding(!isAdding)}
