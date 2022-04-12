@@ -55,7 +55,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                     setDiscordAccess(res.data, 'refresh');
                 } else {
                     setFailedRefresh(true);
-                    console.log('Failed to refresh token, API might be down?', res.error.toJSON());
+                    console.log('Failed to refresh token, API might be down?', res);
                 }
             });
         }

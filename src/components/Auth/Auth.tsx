@@ -34,7 +34,7 @@ const Auth = () => {
                     setAuthStage(AuthStages.Exiting);
                     window.open('/', '_self');
                 } else {
-                    console.log('Hello console viewer, here is your error object :)', res.error.toJSON());
+                    console.log('Hello console viewer, here is your error object :)', res);
                     if (res.error.message === 'Network Error') {
                         setAuthStage(AuthStages.Down);
                     } else {
