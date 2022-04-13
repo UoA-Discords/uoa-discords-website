@@ -1,11 +1,15 @@
 import { Grid } from '@mui/material';
-import sampleData from '../sampleData';
+import { PublicRegisteredGuild } from '@uoa-discords/shared-utils';
 import ServerCard from './ServerCard';
 
-const ServerGallery = () => {
+export interface ServerGalleryProps {
+    servers: PublicRegisteredGuild[];
+}
+
+const ServerGallery = ({ servers }: ServerGalleryProps) => {
     return (
         <Grid container spacing={2}>
-            {sampleData.map((e, i) => (
+            {servers.map((e, i) => (
                 <Grid item key={i} xs={12} md={6} lg={4} xl={3}>
                     <ServerCard server={e} key={i} />
                 </Grid>

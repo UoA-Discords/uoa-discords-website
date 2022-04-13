@@ -1,4 +1,10 @@
-import { APIResponse, AccessTokenResponse, WebApplication, TagNames } from '@uoa-discords/shared-utils';
+import {
+    APIResponse,
+    AccessTokenResponse,
+    WebApplication,
+    TagNames,
+    PublicRegisteredGuild,
+} from '@uoa-discords/shared-utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { ServerApplication } from '../types/ServerApplication';
 
@@ -106,5 +112,32 @@ export default class Server {
 
     public async modifyTags(access_token: string, guildId: string, tags: TagNames[]): Promise<APIResponse<void>> {
         return await this.requestWrapper('applications/modifyTags', { access_token, guildId, tags });
+    }
+
+    public async getServers(): Promise<APIResponse<PublicRegisteredGuild[]>> {
+        try {
+            const { status, statusText, data } = await this._server.get<PublicRegisteredGuild[]>('/servers');
+
+            if (status !== 200) {
+                console.warn(
+                    `Got status code ${status} from ${this._baseURL}/servers with message: ${statusText}`,
+                    data,
+                );
+            }
+
+            data.forEach((application) => {
+                application.tags = application.tags.map((e) => parseInt(e as unknown as string));
+            });
+
+            return {
+                success: true,
+                data,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error as Error as AxiosError,
+            };
+        }
     }
 }
