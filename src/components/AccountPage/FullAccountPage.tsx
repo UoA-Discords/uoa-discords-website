@@ -140,7 +140,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                     </Grid>
                     {isVerifier && (
                         <Grid item>
-                            <Link to="/applications" target="_blank" style={{ textDecoration: 'none' }}>
+                            <Link to="/applications" style={{ textDecoration: 'none' }}>
                                 <Button variant="outlined" color="secondary">
                                     Applications
                                 </Button>
