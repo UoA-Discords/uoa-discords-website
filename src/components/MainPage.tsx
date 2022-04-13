@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Container } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import AccountButton from './AccountButton';
 import ServerGallery from './ServerGallery';
 import Title from './Title';
+import { PublicRegisteredGuild } from '@uoa-discords/shared-utils';
 
-const MainPage = () => {
+export interface HomePageProps {
+    servers: PublicRegisteredGuild[];
+}
+
+const MainPage = ({ servers }: HomePageProps) => {
     const [fadeDelay, setFadeDelay] = useState<number>(0);
 
     useEffect(() => {
@@ -17,7 +22,11 @@ const MainPage = () => {
         <Container maxWidth="xl">
             <AccountButton />
             <Title />
-            <ServerGallery />
+            <Typography color="gray">
+                Development Warning <br />
+                This site is still in development, so servers may have outdated information and be removed.
+            </Typography>
+            <ServerGallery servers={servers} />
         </Container>
     );
 };

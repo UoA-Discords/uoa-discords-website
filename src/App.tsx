@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { DiscordAPI } from '@uoa-discords/shared-utils';
+import { DiscordAPI, PublicRegisteredGuild } from '@uoa-discords/shared-utils';
 import './App.css';
 import AccountPage from './components/AccountPage';
 import Auth from './components/Auth';
@@ -10,10 +10,23 @@ import NotFound from './components/NotFound';
 import useDiscordAccess from './hooks/useDiscordAccess';
 import useDiscordUser from './hooks/useDiscordUser';
 import ApplicationsPage from './components/ApplicationsPage';
+import server from './api';
 
 function App() {
     const { discordAccess } = useDiscordAccess();
     const { user, setUser } = useDiscordUser();
+
+    const [servers, setServers] = useState<PublicRegisteredGuild[]>([]);
+    useEffect(() => {
+        server.getServers().then((res) => {
+            if (res.success) {
+                setServers(res.data);
+            } else {
+                console.log('Failed to fetch servers');
+                console.log(res);
+            }
+        });
+    }, []);
 
     useEffect(() => {
         if (discordAccess && !user) {
@@ -31,7 +44,7 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route index element={<MainPage />} />
+                <Route index element={<MainPage servers={servers} />} />
                 <Route path="auth" element={<Auth />} />
                 <Route path="me" element={<AccountPage />} />
                 <Route path="login" element={<LoginRedirect />} />
