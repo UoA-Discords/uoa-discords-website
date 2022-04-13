@@ -10,3 +10,12 @@
 .discordProfilePicture {
     border-radius: 50%;
 }
+
+.hoverableUserName {
+    transition: color 0.1s linear;
+    cursor: default;
+}
+
+.hoverableUserName:hover {
+    color: pink;
+}

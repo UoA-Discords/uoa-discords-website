@@ -11,7 +11,7 @@ const TagSelector = ({ selectedTags, tagChangeCallback }: TagSelectorProps) => {
     return (
         <Grid container spacing={1}>
             {Object.keys(Tags).map((e, index) => {
-                const tagName = e as unknown as TagNames;
+                const tagName = parseInt(e) as TagNames;
                 const tag = Tags[tagName];
                 const isSelected = selectedTags.has(tagName);
 

@@ -8,6 +8,7 @@ import moment from 'moment';
 import api from '../../api';
 import AddServerPage from '../AddServerPage';
 import useBadges from '../../hooks/useBadges';
+import { Verifiers } from '@uoa-discords/shared-utils';
 
 interface FullAccountPageProps {
     userCookie: FullUserResponse;
@@ -55,7 +56,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                     setDiscordAccess(res.data, 'refresh');
                 } else {
                     setFailedRefresh(true);
-                    console.log('Failed to refresh token, API might be down?', res.error.toJSON());
+                    console.log('Failed to refresh token, API might be down?', res);
                 }
             });
         }
@@ -71,6 +72,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
     const [isAdding, setIsAdding] = useState<boolean>(false);
 
     const badges = useBadges(user.id);
+    const isVerifier = useMemo<boolean>(() => Verifiers.has(user.id), [user.id]);
 
     return (
         <Container maxWidth="sm" sx={{ pt: 3, maxWidth: '100vw', overflowX: 'hidden' }}>
@@ -128,7 +130,7 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                     </Grid>
                     <Grid item>
                         <Button
-                            sx={{ width: '118px' }}
+                            sx={{ width: '118px', whiteSpace: 'nowrap' }}
                             variant="outlined"
                             color={isAdding ? 'error' : 'info'}
                             onClick={() => setIsAdding(!isAdding)}
@@ -136,6 +138,15 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
                             {isAdding ? 'Cancel' : 'Add Server'}
                         </Button>
                     </Grid>
+                    {isVerifier && (
+                        <Grid item>
+                            <Link to="/applications" style={{ textDecoration: 'none' }}>
+                                <Button variant="outlined" color="secondary">
+                                    Applications
+                                </Button>
+                            </Link>
+                        </Grid>
+                    )}
                 </Grid>
             </Grid>
             <AddServerPage isOpen={isAdding} access_token={discordAccess.access_token} />
