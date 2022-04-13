@@ -19,6 +19,7 @@ import { ServerApplication } from '../../types/ServerApplication';
 import TagSelector from '../TagSelector';
 import InvalidIcon from '@mui/icons-material/Close';
 import ValidIcon from '@mui/icons-material/Check';
+import UserCard from '../UserCard';
 
 export interface ApplicationRowProps {
     data: ServerApplication;
@@ -70,7 +71,11 @@ const ApplicationRow = ({ data, onTagsChange, onAccept, onReject }: ApplicationR
                     </Stack>
                 </TableCell>
                 <TableCell align="right">
-                    {data.createdBy.username}#{data.createdBy.discriminator}
+                    <Typography>
+                        <UserCard user={data.createdBy}>
+                            <span className="hoverableUserName">{data.createdBy.username}</span>
+                        </UserCard>
+                    </Typography>
                 </TableCell>
                 <TableCell align="right">{moment(data.createdAt).fromNow()}</TableCell>
                 <TableCell align="right">
@@ -105,16 +110,21 @@ const ApplicationRow = ({ data, onTagsChange, onAccept, onReject }: ApplicationR
                                     </span>
                                 </Stack>
                                 <Stack direction="row" spacing={1}>
-                                    <Tooltip title="Will show on the public registry">
-                                        <Button
-                                            color="success"
-                                            size="large"
-                                            variant="outlined"
-                                            startIcon={<ValidIcon />}
-                                            onClick={() => onAccept(data._id)}
-                                        >
-                                            Accept
-                                        </Button>
+                                    <Tooltip
+                                        title={hasChangedTags ? 'Unsaved changes' : 'Will show on the public registry'}
+                                    >
+                                        <span>
+                                            <Button
+                                                color="success"
+                                                size="large"
+                                                variant="outlined"
+                                                startIcon={<ValidIcon />}
+                                                onClick={() => onAccept(data._id)}
+                                                disabled={hasChangedTags}
+                                            >
+                                                Accept
+                                            </Button>
+                                        </span>
                                     </Tooltip>
                                     <Tooltip title="Will be able to reapply">
                                         <Button
