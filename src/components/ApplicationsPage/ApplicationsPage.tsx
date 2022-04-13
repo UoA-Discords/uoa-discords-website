@@ -135,7 +135,7 @@ const ApplicationsPage = ({ access_token }: { access_token: string }) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {applications.map((e, i) => (
+                        {applications.map((e) => (
                             <ApplicationRow
                                 key={e._id}
                                 data={e}
