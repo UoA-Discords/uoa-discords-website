@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import AccountButton from './AccountButton';
 import ServerGallery from './ServerGallery';
 import Title from './Title';
@@ -22,6 +22,10 @@ const MainPage = ({ servers }: HomePageProps) => {
         <Container maxWidth="xl">
             <AccountButton />
             <Title />
+            <Typography color="gray">
+                Development Warning <br />
+                This site is still in development, so servers may have outdated information and be removed.
+            </Typography>
             <ServerGallery servers={servers} />
         </Container>
     );
