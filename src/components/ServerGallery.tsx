@@ -1,17 +1,16 @@
 import { Grid } from '@mui/material';
-import { PublicRegisteredGuild } from '@uoa-discords/shared-utils';
+import { useSelector } from 'react-redux';
+import { getAllGuilds } from '../redux/slices/guildManager';
 import ServerCard from './ServerCard';
 
-export interface ServerGalleryProps {
-    servers: PublicRegisteredGuild[];
-}
+const ServerGallery = () => {
+    const servers = useSelector(getAllGuilds);
 
-const ServerGallery = ({ servers }: ServerGalleryProps) => {
     return (
         <Grid container spacing={2}>
-            {servers.map((e, i) => (
-                <Grid item key={i} xs={12} md={6} lg={4} xl={3}>
-                    <ServerCard server={e} key={i} />
+            {Object.keys(servers).map((e, i) => (
+                <Grid item key={e} xs={12} md={6} lg={4}>
+                    <ServerCard server={servers[e]} index={i} />
                 </Grid>
             ))}
         </Grid>

@@ -1,6 +1,7 @@
 import { Fade, Slide, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDoneInitialLoad, setDoneInitialLoad } from '../../redux/slices/main';
 
 const title: string = 'uoa-discords.com';
 const subtitle: string = "An Unspecified University's Discord Server Catalogue";
@@ -32,26 +33,25 @@ const SingleCharacter = ({ char, index }: { char: string; index: number }) => {
 };
 
 const Title = () => {
-    const [{ titleTransition }, setCookie] = useCookies<'titleTransition', { titleTransition?: boolean }>([
-        'titleTransition',
-    ]);
+    const dispatch = useDispatch();
+    const doneInitialLoad = useSelector(getDoneInitialLoad);
 
     const [shouldFadeInSubtitle, setShouldFadeInSubtitle] = useState<boolean>(false);
 
     useEffect(() => {
         let timeouts: NodeJS.Timeout[] = [];
-        if (!titleTransition) {
+        if (!doneInitialLoad) {
             const delay = delayFormula(title.length, true);
             timeouts.push(
-                setTimeout(() => setCookie('titleTransition', true), delay + 2000),
+                setTimeout(() => dispatch(setDoneInitialLoad(true)), delay + 2000),
                 setTimeout(() => setShouldFadeInSubtitle(true), delay + 500),
             );
         }
 
         return () => timeouts.forEach((e) => clearTimeout(e));
-    }, [setCookie, titleTransition]);
+    }, [dispatch, doneInitialLoad]);
 
-    if (titleTransition) {
+    if (doneInitialLoad) {
         return (
             <Stack alignItems="center" sx={{ mb: 1 }}>
                 <Typography variant="h2" textAlign="center">

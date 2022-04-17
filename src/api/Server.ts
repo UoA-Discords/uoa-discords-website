@@ -1,12 +1,12 @@
 import {
     APIResponse,
     AccessTokenResponse,
-    WebApplication,
     TagNames,
-    PublicRegisteredGuild,
+    WebApplicationRequest,
+    RegisteredServer,
+    ApplicationServer,
 } from '@uoa-discords/shared-utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
-import { ServerApplication } from '../types/ServerApplication';
 
 export default class Server {
     private readonly _baseURL: string;
@@ -61,19 +61,14 @@ export default class Server {
     }
 
     public async makeApplication(
-        body: WebApplication,
+        body: WebApplicationRequest,
     ): Promise<APIResponse<{ message: string; verifierOverride: boolean }>> {
-        for (let i = 0; i < body.tags.length; i++) {
-            if (typeof body.tags[i] === 'string') {
-                body.tags[i] = parseInt(body.tags[i] as unknown as string);
-            }
-        }
         return await this.requestWrapper('/applications/applyWeb', body, 201);
     }
 
-    public async getApplications(token: string): Promise<APIResponse<ServerApplication[]>> {
+    public async getApplications(token: string): Promise<APIResponse<ApplicationServer[]>> {
         try {
-            const { status, statusText, data } = await this._server.get<ServerApplication[]>('/applications', {
+            const { status, statusText, data } = await this._server.get<ApplicationServer[]>('/applications', {
                 headers: {
                     Authorization: token,
                 },
@@ -85,10 +80,6 @@ export default class Server {
                     data,
                 );
             }
-
-            data.forEach((application) => {
-                application.tags = application.tags.map((e) => parseInt(e as unknown as string));
-            });
 
             return {
                 success: true,
@@ -114,9 +105,9 @@ export default class Server {
         return await this.requestWrapper('applications/modifyTags', { access_token, guildId, tags });
     }
 
-    public async getServers(): Promise<APIResponse<PublicRegisteredGuild[]>> {
+    public async getServers(): Promise<APIResponse<RegisteredServer[]>> {
         try {
-            const { status, statusText, data } = await this._server.get<PublicRegisteredGuild[]>('/servers');
+            const { status, statusText, data } = await this._server.get<RegisteredServer[]>('/servers');
 
             if (status !== 200) {
                 console.warn(
@@ -124,10 +115,6 @@ export default class Server {
                     data,
                 );
             }
-
-            data.forEach((application) => {
-                application.tags = application.tags.map((e) => parseInt(e as unknown as string));
-            });
 
             return {
                 success: true,
