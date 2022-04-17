@@ -5,6 +5,9 @@ import {
     WebApplicationRequest,
     RegisteredServer,
     ApplicationServer,
+    POSTApplicationRoutes,
+    POSTAuthRoutes,
+    GETRoutes,
 } from '@uoa-discords/shared-utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
@@ -49,34 +52,40 @@ export default class Server {
 
     /** Upgrades an OAuth code to a Discord access token. */
     public async getToken(code: string): Promise<APIResponse<AccessTokenResponse>> {
-        return await this.requestWrapper('/auth/getToken', { code, redirect_uri: window.location.origin + '/auth' });
+        return await this.requestWrapper(POSTAuthRoutes.GetToken, {
+            code,
+            redirect_uri: window.location.origin + '/auth',
+        });
     }
 
     public async refreshToken(refresh_token: string): Promise<APIResponse<AccessTokenResponse>> {
-        return await this.requestWrapper('/auth/refreshToken', { refresh_token });
+        return await this.requestWrapper(POSTAuthRoutes.RefreshToken, { refresh_token });
     }
 
     public async revokeToken(token: string): Promise<APIResponse<boolean>> {
-        return await this.requestWrapper('/auth/revokeToken', { token });
+        return await this.requestWrapper(POSTAuthRoutes.RevokeToken, { token });
     }
 
     public async makeApplication(
         body: WebApplicationRequest,
     ): Promise<APIResponse<{ message: string; verifierOverride: boolean }>> {
-        return await this.requestWrapper('/applications/applyWeb', body, 201);
+        return await this.requestWrapper(POSTApplicationRoutes.ApplyWeb, body, 201);
     }
 
     public async getApplications(token: string): Promise<APIResponse<ApplicationServer[]>> {
         try {
-            const { status, statusText, data } = await this._server.get<ApplicationServer[]>('/applications', {
-                headers: {
-                    Authorization: token,
+            const { status, statusText, data } = await this._server.get<ApplicationServer[]>(
+                GETRoutes.GetApplications,
+                {
+                    headers: {
+                        Authorization: token,
+                    },
                 },
-            });
+            );
 
             if (status !== 200) {
                 console.warn(
-                    `Got status code ${status} from ${this._baseURL}/applications with message: ${statusText}`,
+                    `Got status code ${status} from ${this._baseURL}${GETRoutes.GetApplications} with message: ${statusText}`,
                     data,
                 );
             }
@@ -94,24 +103,24 @@ export default class Server {
     }
 
     public async acceptApplication(access_token: string, guildId: string): Promise<APIResponse<void>> {
-        return await this.requestWrapper('/applications/accept', { access_token, guildId }, 201);
+        return await this.requestWrapper(POSTApplicationRoutes.Accept, { access_token, guildId }, 201);
     }
 
     public async rejectApplication(access_token: string, guildId: string): Promise<APIResponse<void>> {
-        return await this.requestWrapper('applications/reject', { access_token, guildId });
+        return await this.requestWrapper(POSTApplicationRoutes.Reject, { access_token, guildId });
     }
 
     public async modifyTags(access_token: string, guildId: string, tags: TagNames[]): Promise<APIResponse<void>> {
-        return await this.requestWrapper('applications/modifyTags', { access_token, guildId, tags });
+        return await this.requestWrapper(POSTApplicationRoutes.Modify, { access_token, guildId, tags });
     }
 
     public async getServers(): Promise<APIResponse<RegisteredServer[]>> {
         try {
-            const { status, statusText, data } = await this._server.get<RegisteredServer[]>('/servers');
+            const { status, statusText, data } = await this._server.get<RegisteredServer[]>(GETRoutes.GetServers);
 
             if (status !== 200) {
                 console.warn(
-                    `Got status code ${status} from ${this._baseURL}/servers with message: ${statusText}`,
+                    `Got status code ${status} from ${this._baseURL}${GETRoutes.GetServers} with message: ${statusText}`,
                     data,
                 );
             }
