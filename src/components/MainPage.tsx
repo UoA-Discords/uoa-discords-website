@@ -1,4 +1,4 @@
-import { Container } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import AccountButton from './AccountButton';
 import SelectedGuild from './SelectedGuild';
 import ServerGallery from './ServerGallery';
@@ -10,6 +10,9 @@ const MainPage = () => {
             <AccountButton />
             <Title />
             <SelectedGuild />
+            <Typography color="lightcoral" textAlign="center">
+                Servers may not be showing due to a rate limiting issue with Discord, we are working to resolve this :/
+            </Typography>
             <ServerGallery />
         </Container>
     );
