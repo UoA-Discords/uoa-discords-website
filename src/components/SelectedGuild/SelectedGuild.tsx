@@ -2,7 +2,6 @@ import { Button, Container, Grid, Modal, Stack, Typography } from '@mui/material
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSelectedGuild, setSelectedGuildId } from '../../redux/slices/main';
-import LoadedGuild from '../../types/LoadedGuild';
 import discordIcon from '../../images/discordIcon.svg';
 import UserCard from '../UserCard';
 
@@ -10,9 +9,10 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import CheckIcon from '@mui/icons-material/Check';
 import LinkIcon from '@mui/icons-material/Link';
 import moment from 'moment';
+import { ServerWithInviteInfo } from '@uoa-discords/shared-utils';
 
 export interface SelectedGuildProps {
-    guild: LoadedGuild;
+    guild: ServerWithInviteInfo;
 }
 
 const style = {

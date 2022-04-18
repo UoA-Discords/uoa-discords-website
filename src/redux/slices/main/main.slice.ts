@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import LoadedGuild from '../../../types/LoadedGuild';
+import { ServerWithInviteInfo } from '@uoa-discords/shared-utils';
 import { StoreState } from '../../store';
 
 export interface State {
@@ -33,7 +33,7 @@ export const { setDoneInitialLoad, setSelectedGuildId } = mainSlice.actions;
 
 export const getDoneInitialLoad = (state: StoreState) => state.main.doneInitialLoad;
 
-export const getSelectedGuild = (state: StoreState): LoadedGuild | null => {
+export const getSelectedGuild = (state: StoreState): ServerWithInviteInfo | null => {
     if (state.main.selectedGuildId === null) {
         return null;
     }

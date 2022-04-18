@@ -1,12 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { DiscordAPI, RegisteredServer } from '@uoa-discords/shared-utils';
-import { AxiosError } from 'axios';
+import { ServerWithInviteInfo } from '@uoa-discords/shared-utils';
 import server from '../../../api';
-import LoadedGuild from '../../../types/LoadedGuild';
 import { StoreState } from '../../store';
 
 export interface State {
-    guilds: Record<string, LoadedGuild>;
+    guilds: Record<string, ServerWithInviteInfo>;
 }
 
 export const initialState: State = {
@@ -17,7 +15,7 @@ const guildManagerSlice = createSlice({
     name: 'guildManager',
     initialState,
     reducers: {
-        addGuilds(state, action: { payload: LoadedGuild[] }) {
+        addGuilds(state, action: { payload: ServerWithInviteInfo[] }) {
             action.payload.forEach((guild) => {
                 state.guilds[guild._id] = guild;
             });
@@ -45,29 +43,8 @@ export const loadGuilds = createAsyncThunk('guildManager/loadsGuilds', async (_,
         return;
     }
 
-    const unloadedGuilds = guildQuery.data; //
-
-    const guildsInviteData = await Promise.all(unloadedGuilds.map((e) => DiscordAPI.getInviteData(e.inviteCode)));
-
-    const erroredGuilds: (RegisteredServer & { error: AxiosError })[] = [];
-    const loadedGuilds: LoadedGuild[] = [];
-
-    for (let i = 0, len = unloadedGuilds.length; i < len; i++) {
-        const registeredServer = unloadedGuilds[i];
-        const inviteQuery = guildsInviteData[i];
-        if (inviteQuery.success) {
-            loadedGuilds.push({ ...registeredServer, invite: inviteQuery.data });
-        } else {
-            erroredGuilds.push({ ...registeredServer, error: inviteQuery.error });
-        }
-    }
-
-    console.log(
-        `Successfully loaded ${loadedGuilds.length} / ${unloadedGuilds.length} guilds (${erroredGuilds.length} errored)`,
-    );
-
     dispatch(removeAllGuilds());
-    dispatch(addGuilds(loadedGuilds));
+    dispatch(addGuilds(guildQuery.data));
 });
 
 export default guildManagerSlice.reducer;
