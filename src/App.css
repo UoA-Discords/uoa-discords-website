@@ -14,6 +14,9 @@
 .hoverableUserName {
     transition: color 0.1s linear;
     cursor: default;
+    text-decoration: dashed underline 1px #999;
+    text-underline-offset: 2px;
+    color: #CCC;
 }
 
 .hoverableUserName:hover {

@@ -1,5 +1,5 @@
 import { Chip, Grid, Typography } from '@mui/material';
-import { TagNames, Tags } from '@uoa-discords/shared-utils';
+import { TagNames, TagDescriptionsMap } from '@uoa-discords/shared-utils';
 import LightTooltip from '../LightTooltip';
 
 interface TagSelectorProps {
@@ -10,19 +10,22 @@ interface TagSelectorProps {
 const TagSelector = ({ selectedTags, tagChangeCallback }: TagSelectorProps) => {
     return (
         <Grid container spacing={1}>
-            {Object.keys(Tags).map((e, index) => {
-                const tagName = parseInt(e) as TagNames;
-                const tag = Tags[tagName];
+            {Object.keys(TagDescriptionsMap).map((e, index) => {
+                const tagName = e as TagNames;
                 const isSelected = selectedTags.has(tagName);
 
                 return (
                     <Grid item key={index}>
-                        <LightTooltip title={<Typography>{tag.description}</Typography>} arrow enterDelay={0}>
+                        <LightTooltip
+                            title={<Typography>{TagDescriptionsMap[tagName]}</Typography>}
+                            arrow
+                            enterDelay={0}
+                        >
                             <Chip
-                                label={tag.name}
+                                label={tagName}
                                 variant="outlined"
                                 color={isSelected ? 'success' : undefined}
-                                clickable
+                                clickable={!!tagChangeCallback}
                                 onClick={() => tagChangeCallback(tagName)}
                             />
                         </LightTooltip>

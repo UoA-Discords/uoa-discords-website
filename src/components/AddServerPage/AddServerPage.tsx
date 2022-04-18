@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, CircularProgress, Collapse, Fade, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import { DiscordAPI, Invite, TagNames, WebApplication } from '@uoa-discords/shared-utils';
+import { DiscordAPI, Invite, TagNames, WebApplicationRequest } from '@uoa-discords/shared-utils';
 import useDebounce from '../../hooks/useDebounce';
 import { steps } from './steps';
 import ValidationStep from './ValidationStep';
@@ -115,7 +115,7 @@ const AddServerPage = ({ isOpen, access_token }: AddServerPageProps) => {
     const submitApplication = useCallback(() => {
         if (!inviteStatus) return;
 
-        const body: WebApplication = {
+        const body: WebApplicationRequest = {
             inviteCode: inviteStatus.code,
             authToken: access_token,
             tags: Array.from(tags),

@@ -12,20 +12,19 @@ import {
     Table,
     TableBody,
 } from '@mui/material';
-import { TagNames } from '@uoa-discords/shared-utils';
+import { ApplicationServer, TagNames } from '@uoa-discords/shared-utils';
 import { AxiosError } from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import server from '../../api';
 import useDiscordAccess from '../../hooks/useDiscordAccess';
-import { ServerApplication } from '../../types/ServerApplication';
 import NotFound from '../NotFound';
 import ApplicationRow from './ApplicationRow';
 
 const ApplicationsPage = ({ access_token }: { access_token: string }) => {
     const [loading, setIsLoading] = useState<boolean>(true);
     const [errored, setIsErrored] = useState<false | AxiosError>(false);
-    const [applications, setApplications] = useState<ServerApplication[]>([]);
+    const [applications, setApplications] = useState<ApplicationServer[]>([]);
 
     const refreshApplications = useCallback(() => {
         setIsLoading(true);
@@ -138,7 +137,7 @@ const ApplicationsPage = ({ access_token }: { access_token: string }) => {
                         {applications.map((e) => (
                             <ApplicationRow
                                 key={e._id}
-                                data={e}
+                                application={e}
                                 onTagsChange={handleTagsChange}
                                 onAccept={handleAccept}
                                 onReject={handleReject}

@@ -1,4 +1,10 @@
-import { BlacklistedGuilds, HelperAPI, Invite, OptOutGuilds, VerificationLevels } from '@uoa-discords/shared-utils';
+import {
+    BlacklistedGuilds,
+    GuildRequirements,
+    Invite,
+    OptOutGuilds,
+    VerificationLevels,
+} from '@uoa-discords/shared-utils';
 import moment from 'moment';
 
 const verificationLevelNameMap: Record<VerificationLevels, string> = {
@@ -48,19 +54,19 @@ export const steps: StepCallback[] = [
             };
     },
     ({ approximate_member_count }) => {
-        if (approximate_member_count < HelperAPI.MIN_ACCEPTABLE_MEMBERS) {
+        if (approximate_member_count < GuildRequirements.minMemberCount) {
             return {
                 passes: false,
                 content: (
                     <>
                         Has{' '}
                         <span style={{ color: 'lightcoral' }}>
-                            {approximate_member_count} / {HelperAPI.MIN_ACCEPTABLE_MEMBERS}
+                            {approximate_member_count} / {GuildRequirements.minMemberCount}
                         </span>{' '}
                         members
                     </>
                 ),
-                tooltip: `Must have at least ${HelperAPI.MIN_ACCEPTABLE_MEMBERS} members`,
+                tooltip: `Must have at least ${GuildRequirements.minMemberCount} members`,
             };
         } else
             return {
@@ -69,7 +75,7 @@ export const steps: StepCallback[] = [
                     <>
                         Has{' '}
                         <span style={{ color: 'lightgreen' }}>
-                            {approximate_member_count} / {HelperAPI.MIN_ACCEPTABLE_MEMBERS}
+                            {approximate_member_count} / {GuildRequirements.minMemberCount}
                         </span>{' '}
                         members
                     </>
@@ -103,7 +109,7 @@ export const steps: StepCallback[] = [
                 tooltip: 'Failed to get verification level data',
             };
         }
-        if (guild.verification_level >= VerificationLevels.LOW)
+        if (guild.verification_level >= GuildRequirements.verificationWarnBelow)
             return {
                 passes: true,
                 content: (
