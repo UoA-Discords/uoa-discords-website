@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ServerWithInviteInfo } from '@uoa-discords/shared-utils';
-import server from '../../../api';
 import { StoreState } from '../../store';
 
 export interface State {
@@ -36,15 +35,14 @@ export const { addGuilds, removeGuildsById, removeAllGuilds } = guildManagerSlic
 export const getAllGuilds = (state: StoreState) => state.guildManager.guilds;
 
 export const loadGuilds = createAsyncThunk('guildManager/loadsGuilds', async (_, { getState, dispatch }) => {
-    const guildQuery = await server.getServers();
-    if (!guildQuery.success) {
-        console.log('failed to get guilds', guildQuery.error);
-        // TODO: error handling and showing
-        return;
-    }
-
-    dispatch(removeAllGuilds());
-    dispatch(addGuilds(guildQuery.data));
+    // const guildQuery = await server.getServers();
+    // if (!guildQuery.success) {
+    //     console.log('failed to get guilds', guildQuery.error);
+    //     // TODO: error handling and showing
+    //     return;
+    // }
+    // dispatch(removeAllGuilds());
+    // dispatch(addGuilds(guildQuery.data));
 });
 
 export default guildManagerSlice.reducer;
