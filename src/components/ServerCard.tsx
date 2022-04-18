@@ -1,11 +1,11 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, Fade, Typography } from '@mui/material';
+import { ServerWithInviteInfo } from '@uoa-discords/shared-utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setSelectedGuildId } from '../redux/slices/main';
-import LoadedGuild from '../types/LoadedGuild';
 
 export interface ServerCardProps {
-    server: LoadedGuild;
+    server: ServerWithInviteInfo;
     index: number;
 }
 
