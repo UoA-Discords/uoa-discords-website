@@ -3,11 +3,11 @@ import {
     AccessTokenResponse,
     TagNames,
     WebApplicationRequest,
-    RegisteredServer,
     ApplicationServer,
     POSTApplicationRoutes,
     POSTAuthRoutes,
     GETRoutes,
+    ServerWithInviteInfo,
 } from '@uoa-discords/shared-utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
@@ -114,9 +114,9 @@ export default class Server {
         return await this.requestWrapper(POSTApplicationRoutes.Modify, { access_token, guildId, tags });
     }
 
-    public async getServers(): Promise<APIResponse<RegisteredServer[]>> {
+    public async getServers(): Promise<APIResponse<ServerWithInviteInfo[]>> {
         try {
-            const { status, statusText, data } = await this._server.get<RegisteredServer[]>(GETRoutes.GetServers);
+            const { status, statusText, data } = await this._server.get<ServerWithInviteInfo[]>(GETRoutes.GetServers);
 
             if (status !== 200) {
                 console.warn(
