@@ -7,7 +7,7 @@ const ServerGallery = () => {
     const servers = useSelector(getAllGuilds);
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ pb: 4 }}>
             {Object.keys(servers).map((e, i) => (
                 <Grid item key={e} xs={12} md={6} lg={4}>
                     <ServerCard server={servers[e]} index={i} />
