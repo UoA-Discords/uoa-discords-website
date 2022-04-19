@@ -9,6 +9,8 @@ import api from '../../api';
 import AddServerPage from '../AddServerPage';
 import useBadges from '../../hooks/useBadges';
 import { Verifiers } from '@uoa-discords/shared-utils';
+import getDiscordIcon from '../../helpers/getDiscordIcon';
+import UserCard from '../UserCard';
 
 interface FullAccountPageProps {
     userCookie: FullUserResponse;
@@ -74,21 +76,26 @@ const FullAccountPage = ({ userCookie, discordCookie }: FullAccountPageProps) =>
     const badges = useBadges(user.id);
     const isVerifier = useMemo<boolean>(() => Verifiers.has(user.id), [user.id]);
 
+    const { src, alt } = getDiscordIcon(user);
+
     return (
         <Container maxWidth="sm" sx={{ pt: 3, maxWidth: '100vw', overflowX: 'hidden' }}>
             <Grid container spacing={1}>
                 <Grid item xs={12} sm={4} sx={{ display: 'flex', justifyContent: 'center' }}>
                     <img
-                        src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
-                        alt="Your Discord profile"
+                        src={src}
+                        alt={alt}
+                        style={{ width: '128px', height: '128px' }}
                         className="discordProfilePicture"
                     />
                 </Grid>
                 <Grid item xs={12} sm={8}>
-                    <Typography variant="h4">
-                        {user.username}
-                        <span style={{ color: 'gray' }}>#{user.discriminator}</span>
-                    </Typography>
+                    <UserCard user={user}>
+                        <Typography variant="h4">
+                            {user.username}
+                            <span style={{ color: 'gray' }}>#{user.discriminator}</span>
+                        </Typography>
+                    </UserCard>
                     <Typography color="gray" title="Your Discord ID">
                         {user.id}
                     </Typography>
