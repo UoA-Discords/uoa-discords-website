@@ -1,6 +1,7 @@
 import { Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { User } from '@uoa-discords/shared-utils';
 import React from 'react';
+import getDiscordIcon from '../../helpers/getDiscordIcon';
 import useBadges from '../../hooks/useBadges';
 
 export interface UserCardProps {
@@ -9,9 +10,11 @@ export interface UserCardProps {
 }
 
 const UserCard = ({ user, children }: UserCardProps) => {
-    const { avatar, discriminator, id, username } = user;
+    const { discriminator, id, username } = user;
 
     const badges = useBadges(id);
+
+    const { src: profileImageSource, alt: profileImageAlt } = getDiscordIcon(user);
 
     return (
         <Tooltip
@@ -24,8 +27,8 @@ const UserCard = ({ user, children }: UserCardProps) => {
                     <Stack direction="row" spacing={1}>
                         <img
                             style={{ width: '50px' }}
-                            src={`https://cdn.discordapp.com/avatars/${id}/${avatar}.png`}
-                            alt={`${username}'s Discord profile`}
+                            src={profileImageSource}
+                            alt={profileImageAlt}
                             className="discordProfilePicture"
                         />
                         <Stack>

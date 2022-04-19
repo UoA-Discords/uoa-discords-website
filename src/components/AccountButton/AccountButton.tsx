@@ -4,6 +4,7 @@ import useDiscordUser from '../../hooks/useDiscordUser';
 import discordIcon from '../../images/discordIcon.svg';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import getDiscordIcon from '../../helpers/getDiscordIcon';
 
 const AccountButton = () => {
     const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -13,19 +14,22 @@ const AccountButton = () => {
 
     const [image, buttonText, buttonDescription] = useMemo<[JSX.Element, string, string]>(() => {
         if (discordAccess) {
-            if (user)
+            if (user) {
+                const { src, alt } = getDiscordIcon(user);
+
                 return [
-                    <img
-                        src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
-                        alt="Your Discord profile"
-                        height="64"
-                        className="discordProfilePicture"
-                    />,
+                    <img src={src} alt={alt} height="64" width="64" className="discordProfilePicture" />,
                     user.username,
                     'View profile',
                 ];
-            else return [<CircularProgress />, 'Loading', 'Loading profile'];
-        } else return [<img src={discordIcon} alt="Discord logo" height="64" width="64" />, 'Log in', 'Via Discord'];
+            }
+
+            // logged in - but no user data yet
+            return [<CircularProgress />, 'Loading', 'Loading profile'];
+        }
+
+        // not logged in
+        return [<img src={discordIcon} alt="Discord logo" height="64" width="64" />, 'Log in', 'Via Discord'];
     }, [discordAccess, user]);
 
     return (

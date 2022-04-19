@@ -28,7 +28,7 @@
         "@types/node": "^16.7.13",
         "@types/react": "^17.0.20",
         "@types/react-dom": "^17.0.9",
-        "@uoa-discords/shared-utils": "^2.1.6",
+        "@uoa-discords/shared-utils": "^2.1.7",
         "axios": "^0.26.1",
         "moment": "^2.29.1",
         "react": "^18.0.0",
