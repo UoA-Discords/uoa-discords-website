@@ -53,8 +53,8 @@ export const steps: StepCallback[] = [
                 ),
             };
     },
-    ({ approximate_member_count, guild }) => {
-        if (approximate_member_count < GuildRequirements.minMemberCount && guild?.id !== '965524576119447553') {
+    ({ approximate_member_count }) => {
+        if (approximate_member_count < GuildRequirements.minMemberCount) {
             return {
                 passes: false,
                 content: (
