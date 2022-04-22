@@ -28,10 +28,13 @@ const guildManagerSlice = createSlice({
         removeAllGuilds(state) {
             state.guilds = {};
         },
+        modifyGuildLikes(state, action: { payload: { guildId: string; modifier: number } }) {
+            state.guilds[action.payload.guildId].likes += action.payload.modifier;
+        },
     },
 });
 
-export const { addGuilds, removeGuildsById, removeAllGuilds } = guildManagerSlice.actions;
+export const { addGuilds, removeGuildsById, removeAllGuilds, modifyGuildLikes } = guildManagerSlice.actions;
 
 export const getAllGuilds = (state: StoreState) => state.guildManager.guilds;
 
