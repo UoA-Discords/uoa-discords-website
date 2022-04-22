@@ -36,7 +36,7 @@ const ServerCard = ({ server, index }: ServerCardProps) => {
     }, [index]);
 
     const likeStatus = useMemo<'notAllowed' | 'likable' | 'unlikable'>(() => {
-        if (!discordAccess?.access_token) return 'unlikable';
+        if (!discordAccess?.access_token) return 'notAllowed';
         if (userLikes[server._id] !== undefined) return 'unlikable';
         if (userGuilds[server._id] !== undefined) return 'likable';
         return 'notAllowed';
