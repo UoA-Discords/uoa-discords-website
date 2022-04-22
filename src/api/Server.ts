@@ -8,6 +8,7 @@ import {
     POSTAuthRoutes,
     GETRoutes,
     ServerWithInviteInfo,
+    POSTUserRoutes,
 } from '@uoa-discords/shared-utils';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
@@ -135,5 +136,40 @@ export default class Server {
                 error: error as Error as AxiosError,
             };
         }
+    }
+
+    public async getLikes(userId: string, token: string): Promise<APIResponse<string[]>> {
+        try {
+            const { status, statusText, data } = await this._server.get<string[]>(`/users/${userId}/likes`, {
+                headers: {
+                    Authorization: token,
+                },
+            });
+
+            if (status !== 200) {
+                console.warn(
+                    `Got status code ${status} from ${this._baseURL}${GETRoutes.GetUserLikes} with message: ${statusText}`,
+                    data,
+                );
+            }
+
+            return {
+                success: true,
+                data,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error as Error as AxiosError,
+            };
+        }
+    }
+
+    public async removeLike(access_token: string, guildId: string): Promise<APIResponse<void>> {
+        return await this.requestWrapper(POSTUserRoutes.RemoveLike, { access_token, guildId });
+    }
+
+    public async addLike(access_token: string, guildId: string): Promise<APIResponse<void>> {
+        return await this.requestWrapper(POSTUserRoutes.AddLike, { access_token, guildId });
     }
 }

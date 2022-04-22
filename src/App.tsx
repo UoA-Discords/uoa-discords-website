@@ -12,6 +12,7 @@ import useDiscordUser from './hooks/useDiscordUser';
 import ApplicationsPage from './components/ApplicationsPage';
 import { useDispatch } from 'react-redux';
 import { loadGuilds } from './redux/slices/guildManager';
+import { loadUserGuilds, loadUserLikes } from './redux/slices/user';
 
 function App() {
     const dispatch = useDispatch();
@@ -34,6 +35,18 @@ function App() {
             });
         }
     }, [discordAccess, setUser, user]);
+
+    useEffect(() => {
+        if (discordAccess?.access_token) {
+            dispatch(loadUserGuilds(discordAccess.access_token));
+        }
+    }, [discordAccess?.access_token, dispatch]);
+
+    useEffect(() => {
+        if (discordAccess?.access_token && user?.id) {
+            dispatch(loadUserLikes({ userID: user.id, access_token: discordAccess.access_token }));
+        }
+    }, [discordAccess?.access_token, dispatch, user?.id]);
 
     return (
         <BrowserRouter>
